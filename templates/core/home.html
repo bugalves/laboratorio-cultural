@@ -1,0 +1,113 @@
+{% extends "base.html" %} {% block content %}
+<head>
+  <link rel="stylesheet" href="static/css/home.css" />
+  <script src="static/js/home.js"></script>
+</head>
+<section class="hero">
+  <div class="hero-content">
+    <!-- Substituir por imagem -->
+    <div class="image-missing" style="width: 500px"></div>
+    <div>
+      <div class="hero-slogan">
+        <h1>Laboratório Cultural</h1>
+        <p>
+          Um espaço de promoção da cultura, criatividade e expressão artística
+          dentro e fora do ISPGAYA
+        </p>
+      </div>
+      <p class="hero-details">
+        O Laboratório Cultural do ISPGAYA é um espaço dedicado à promoção da
+        cultura e da expressão artística, dentro e fora da instituição. Aqui são
+        divulgados eventos, iniciativas e clubes culturais da região do Grande
+        Porto, incentivando a participação ativa dos estudantes e o contacto com
+        a comunidade envolvente. Uma plataforma dinâmica que aproxima talento,
+        criatividade e oportunidades culturais.
+      </p>
+      <a href="#agenda-cultural" class="link-btn">Ver atividades</a>
+    </div>
+  </div>
+</section>
+<section>
+  <h2>Clubes Culturais</h2>
+  <div class="cultural-cards">
+    <div class="card">
+      <div class="card-image">
+        <img
+          src="static/images/clube-de-leitura.webp"
+          alt="Imagem do Clube de Leitura"
+          width="300"
+          height="170"
+        />
+      </div>
+      <div class="card-details">
+        <p class="card-title">Clube de Leitura</p>
+        <a href="/clube-de-leitura" class="card-link">Ver mais</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-image">
+        <img
+          src="static/images/clube-de-teatro.webp"
+          alt="Imagem do Clube de Teatro"
+          width="300"
+          height="170"
+        />
+      </div>
+      <div class="card-details">
+        <p class="card-title">Clube de Teatro</p>
+        <a href="/clube-de-teatro" class="card-link">Ver mais</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-image">
+        <img
+          src="static/images/tuna-academica.jpg"
+          alt="Imagem da Tuna Académica"
+          width="300"
+          height="170"
+        />
+        <span class="image-badge">Brevemente</span>
+      </div>
+      <div class="card-details">
+        <p class="card-title">Tuna Académica</p>
+        <a href="/tuna-academica" class="card-link">Ver mais</a>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="agenda-cultural">
+  <h2>Agenda Cultural</h2>
+  <!-- Substituir para eventos dinâmicos -->
+  <div class="event-section">
+    <div>
+      <p id="event-description">
+        O NOS Primavera Sound é um festival de música que reúne artistas
+        internacionais e nacionais de vários géneros, com especial destaque para
+        indie, rock e eletrónica, atraindo milhares de visitantes todos os anos.
+      </p>
+      <p>
+        Local: <span id="event-location">Parque da Cidade do Porto, Porto</span>
+      </p>
+      <p>Data: <span id="event-date">Início de junho</span></p>
+    </div>
+    <div class="image-missing"></div>
+  </div>
+</section>
+<section>
+  <h2>Galeria</h2>
+  <!-- Substituir por imagens -->
+  <div class="gallery-grid">
+    <div class="image-missing" style="width: 200px"></div>
+    <div>
+      <div class="image-missing" style="width: 100px"></div>
+      <div class="image-missing" style="width: 100px"></div>
+    </div>
+    <div>
+      <div class="image-missing" style="width: 100px"></div>
+      <div class="image-missing" style="width: 100px"></div>
+    </div>
+    <div class="image-missing" style="width: 200px"></div>
+  </div>
+</section>
+
+{% endblock %}

@@ -30,20 +30,23 @@
 <section>
   <h2>Clubes Culturais</h2>
   <div class="cultural-cards">
-    <div class="card">
-      <div class="card-image">
-        <img
-          src="static/images/clube-de-leitura.webp"
-          alt="Imagem do Clube de Leitura"
-          width="300"
-          height="170"
-        />
-      </div>
-      <div class="card-details">
-        <p class="card-title">Clube de Leitura</p>
-        <a href="/clube-de-leitura" class="card-link">Ver mais</a>
-      </div>
+  {% for clube in clubes %}
+  <div class="card">
+    <div class="card-image">
+      <img
+        src="/static/images/clube-de-leitura.webp"
+        alt="Imagem do Clube"
+        width="300"
+        height="170"
+      />
     </div>
+    <div class="card-details">
+      <p class="card-title">{{ clube.nome }}</p>
+      <a href="#" class="card-link">Ver mais</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
     <div class="card">
       <div class="card-image">
         <img

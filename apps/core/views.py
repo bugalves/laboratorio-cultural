@@ -1,12 +1,17 @@
 from django.shortcuts import render
-from .models import Clube
+from .models import Clube, Evento, Galeria, Laboratorio
 
 def home(request):
     clubes = Clube.objects.all()
+    eventos = Evento.objects.all()
+    galerias = Galeria.objects.all()
+    laboratorio = Laboratorio.objects.first()
 
     return render(request, 'core/home.html', {
         'clubes': clubes,
-        'user': request.user
+        'eventos': eventos,
+        'galerias': galerias,
+        'laboratorio': laboratorio,
     })
 
 from django.shortcuts import render, redirect
@@ -30,10 +35,12 @@ def login_view(request):
 
             login(request, user)
 
-            if user.is_superuser:
+            if user.is_superuser or user.nivel in ["admin", "moderador"]:
+                user.is_staff = True
+                user.save()
                 return redirect("/admin/")
-            else:
-                return redirect("/")
+
+            return redirect("/")
 
         else:
             error = "Credenciais inválidas"

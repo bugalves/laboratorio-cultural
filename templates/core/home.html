@@ -5,8 +5,11 @@
 </head>
 <section class="hero">
   <div class="hero-content">
-    <!-- Substituir por imagem -->
-    <div class="image-missing" style="width: 500px"></div>
+    {% if laboratorio.imagem %}
+  <img src="{{ laboratorio.imagem }}" width="500">
+{% else %}
+  <div class="image-missing"></div>
+{% endif %}
     <div>
       <div class="hero-slogan">
         <h1>Laboratório Cultural</h1>
@@ -23,7 +26,9 @@
         a comunidade envolvente. Uma plataforma dinâmica que aproxima talento,
         criatividade e oportunidades culturais.
       </p>
-      <a href="#agenda-cultural" class="link-btn">Ver atividades</a>
+      <a href="{{ laboratorio.botao_link }}" class="link-btn">
+  {{ laboratorio.botao_texto }}
+</a>
     </div>
   </div>
 </section>
@@ -31,86 +36,47 @@
   <h2>Clubes Culturais</h2>
   <div class="cultural-cards">
   {% for clube in clubes %}
-  <div class="card">
-    <div class="card-image">
-      <img
-        src="/static/images/clube-de-leitura.webp"
-        alt="Imagem do Clube"
-        width="300"
-        height="170"
-      />
-    </div>
-    <div class="card-details">
-      <p class="card-title">{{ clube.nome }}</p>
-      <a href="#" class="card-link">Ver mais</a>
-    </div>
+<div class="card">
+  <div class="card-image">
+    <img src="/static/images/clube-de-leitura.webp" />
   </div>
-  {% endfor %}
+  <div class="card-details">
+    <p class="card-title">{{ clube.nome }}</p>
+
+    <a href="{{ clube.link }}" class="card-link">
+      Ver mais
+    </a>
+  </div>
 </div>
-    <div class="card">
-      <div class="card-image">
-        <img
-          src="static/images/clube-de-teatro.webp"
-          alt="Imagem do Clube de Teatro"
-          width="300"
-          height="170"
-        />
-      </div>
-      <div class="card-details">
-        <p class="card-title">Clube de Teatro</p>
-        <a href="/clube-de-teatro" class="card-link">Ver mais</a>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-image">
-        <img
-          src="static/images/tuna-academica.jpg"
-          alt="Imagem da Tuna Académica"
-          width="300"
-          height="170"
-        />
-        <span class="image-badge">Brevemente</span>
-      </div>
-      <div class="card-details">
-        <p class="card-title">Tuna Académica</p>
-        <a href="/tuna-academica" class="card-link">Ver mais</a>
-      </div>
-    </div>
-  </div>
+{% endfor %}
 </section>
 <section id="agenda-cultural">
   <h2>Agenda Cultural</h2>
-  <!-- Substituir para eventos dinâmicos -->
-  <div class="event-section">
-    <div>
-      <p id="event-description">
-        O NOS Primavera Sound é um festival de música que reúne artistas
-        internacionais e nacionais de vários géneros, com especial destaque para
-        indie, rock e eletrónica, atraindo milhares de visitantes todos os anos.
-      </p>
-      <p>
-        Local: <span id="event-location">Parque da Cidade do Porto, Porto</span>
-      </p>
-      <p>Data: <span id="event-date">Início de junho</span></p>
-    </div>
-    <div class="image-missing"></div>
+  {% for evento in eventos %}
+<div class="event-section">
+  <div>
+    <p>{{ evento.descricao }}</p>
+    <p>Local: {{ evento.local }}</p>
+    <p>Data: {{ evento.data_evento }}</p>
   </div>
+
+  <div>
+    {% if evento.imagem %}
+      <img src="{{ evento.imagem }}" width="200">
+    {% else %}
+      <div class="image-missing"></div>
+    {% endif %}
+  </div>
+</div>
+{% endfor %}
 </section>
 <section>
   <h2>Galeria</h2>
-  <!-- Substituir por imagens -->
   <div class="gallery-grid">
-    <div class="image-missing" style="width: 200px"></div>
-    <div>
-      <div class="image-missing" style="width: 100px"></div>
-      <div class="image-missing" style="width: 100px"></div>
-    </div>
-    <div>
-      <div class="image-missing" style="width: 100px"></div>
-      <div class="image-missing" style="width: 100px"></div>
-    </div>
-    <div class="image-missing" style="width: 200px"></div>
-  </div>
+  {% for imagem in galerias %}
+    <img src="{{ imagem.caminho_imagem }}" width="200">
+  {% endfor %}
+</div>
 </section>
 
 {% endblock %}

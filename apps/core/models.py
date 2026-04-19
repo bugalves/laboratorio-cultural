@@ -39,27 +39,45 @@ class Utilizador(AbstractBaseUser, PermissionsMixin):
 
     objects = UtilizadorManager()
 
+    class Meta:
+        verbose_name = "Utilizador"
+        verbose_name_plural = "Utilizadores"
+
 class Laboratorio(models.Model):
-    nome = models.CharField(max_length=100)
-    apresentacao = models.TextField(blank=True, null=True)
-    missao = models.TextField(blank=True, null=True)
-    objetivos = models.TextField(blank=True, null=True)
     imagem = models.CharField(max_length=255, blank=True, null=True)
+    botao_texto = models.CharField(max_length=100, default="Ver atividades")
+    botao_link = models.CharField(max_length=255, default="#")
+
+    class Meta:
+        verbose_name = "Laboratório"
 
 class Clube(models.Model):
     nome = models.CharField(max_length=100)
     descricao = models.TextField(blank=True, null=True)
     data_criacao = models.DateField(null=True, blank=True)
     ativo = models.BooleanField(default=True)
+    link = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Clube"
+        verbose_name_plural = "Clubes Culturais"
 
 class Cidade(models.Model):
     nome = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name = "Cidade❌"
+        verbose_name_plural = "Cidades❌"
 
 class Livro(models.Model):
     titulo = models.CharField(max_length=150)
     autor = models.CharField(max_length=100, blank=True, null=True)
     descricao = models.TextField(blank=True, null=True)
     capa = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Livro❌"
+        verbose_name_plural = "Livros❌"
 
 class Evento(models.Model):
     titulo = models.CharField(max_length=150)
@@ -68,6 +86,10 @@ class Evento(models.Model):
     local = models.CharField(max_length=150, blank=True, null=True)
     tipo_evento = models.CharField(max_length=100, blank=True, null=True)
     imagem = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Evento"
+        verbose_name_plural = "Agenda Cultural"
 
     cidade = models.ForeignKey(Cidade, on_delete=models.SET_NULL, null=True, blank=True)
     clube = models.ForeignKey(Clube, on_delete=models.CASCADE, null=True, blank=True)
@@ -79,6 +101,10 @@ class SessaoLeitura(models.Model):
     livro = models.ForeignKey(Livro, on_delete=models.SET_NULL, null=True, blank=True)
     clube = models.ForeignKey(Clube, on_delete=models.CASCADE, null=True, blank=True)
 
+    class Meta:
+        verbose_name = "Sessão de Leitura❌"
+        verbose_name_plural = "Sessões de Leitura❌"
+
 
 class Noticia(models.Model):
     titulo = models.CharField(max_length=150)
@@ -88,8 +114,15 @@ class Noticia(models.Model):
 
     clube = models.ForeignKey(Clube, on_delete=models.CASCADE, null=True, blank=True)
 
+    class Meta:
+        verbose_name = "Notícia❌"
+        verbose_name_plural = "Notícias❌"
+
 class Galeria(models.Model):
     titulo = models.CharField(max_length=150, blank=True, null=True)
     caminho_imagem = models.CharField(max_length=255)
 
     evento = models.ForeignKey(Evento, on_delete=models.CASCADE, null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Galeria"

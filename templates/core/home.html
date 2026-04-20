@@ -38,7 +38,11 @@
   {% for clube in clubes %}
 <div class="card">
   <div class="card-image">
-    <img src="/static/images/clube-de-leitura.webp" />
+    {% if clube.imagem %}
+  <img src="{{ clube.imagem }}" />
+{% else %}
+  <div class="image-missing"></div>
+{% endif %}
   </div>
   <div class="card-details">
     <p class="card-title">{{ clube.nome }}</p>
@@ -72,11 +76,40 @@
 </section>
 <section>
   <h2>Galeria</h2>
+
   <div class="gallery-grid">
-  {% for imagem in galerias %}
-    <img src="{{ imagem.caminho_imagem }}" width="200">
-  {% endfor %}
-</div>
+
+    {% if galerias and galerias|length > 0 %}
+
+      {% for imagem in galerias %}
+        <div class="gallery-item">
+          {% if imagem.caminho_imagem %}
+            <img src="{{ imagem.caminho_imagem }}" />
+          {% else %}
+            <div class="image-missing"></div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+    {% else %}
+
+      <div class="image-missing" style="width: 200px"></div>
+
+      <div>
+        <div class="image-missing" style="width: 100px"></div>
+        <div class="image-missing" style="width: 100px"></div>
+      </div>
+
+      <div>
+        <div class="image-missing" style="width: 100px"></div>
+        <div class="image-missing" style="width: 100px"></div>
+      </div>
+
+      <div class="image-missing" style="width: 200px"></div>
+
+    {% endif %}
+
+  </div>
 </section>
 
 {% endblock %}

@@ -74,7 +74,7 @@ class LaboratorioAdmin(admin.ModelAdmin):
 # ---------------- CLUBE ----------------
 @admin.register(Clube)
 class ClubeAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'ativo', 'data_criacao', 'admin_actions')
+    list_display = ('nome', 'ativo', 'data_criacao', 'imagem', 'admin_actions')
     search_fields = ('nome',)
     list_filter = ('ativo',)
 

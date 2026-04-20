@@ -57,6 +57,7 @@ class Clube(models.Model):
     data_criacao = models.DateField(null=True, blank=True)
     ativo = models.BooleanField(default=True)
     link = models.CharField(max_length=255, blank=True, null=True)
+    imagem = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         verbose_name = "Clube"

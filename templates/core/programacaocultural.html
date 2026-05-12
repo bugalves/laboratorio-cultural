@@ -1,0 +1,68 @@
+{% extends "base.html" %} {% block content %}
+<head>
+  <link rel="stylesheet" href="../../static/css/programacaocultural.css" />
+  <link rel="stylesheet" href="../../static/css/global.css" />
+  <script src="../../static/js/home.js"></script>
+</head>
+
+<body>
+
+<header>
+  <h1>Programação Cultural</h1>
+</header>
+
+<main>
+  <!-- FILTROS -->
+  <section class="filters-section">
+    <div class="filters-label">Filtros:</div>
+    <div class="filters-row">
+      <select class="filter-select" id="f-cidade">
+        <option value="">Cidade</option>
+        <option value="Lisboa">Lisboa</option>
+        <option value="Porto">Porto</option>
+        <option value="Braga">Braga</option>
+        <option value="Coimbra">Coimbra</option>
+        <option value="Faro">Faro</option>
+      </select>
+      <select class="filter-select" id="f-tipo">
+        <option value="">Tipo de Evento</option>
+        <option value="Concerto">Concerto</option>
+        <option value="Teatro">Teatro</option>
+        <option value="Exposição">Exposição</option>
+        <option value="Festival">Festival</option>
+        <option value="Cinema">Cinema</option>
+      </select>
+      <select class="filter-select" id="f-data">
+        <option value="">Data</option>
+        <option value="hoje">Hoje</option>
+        <option value="semana">Esta semana</option>
+        <option value="mes">Este mês</option>
+      </select>
+      <button class="btn-filtrar" onclick="applyFilters()">Filtrar</button>
+    </div>
+  </section>
+
+  <!-- EVENTOS -->
+  <section>
+    <div class="events-label">Eventos:</div>
+    <div class="events-grid" id="events-grid"></div>
+  </section>
+</main>
+
+<!-- MODAL -->
+<div class="modal-backdrop" id="modal" onclick="closeModal(event)">
+  <div class="modal" id="modal-box">
+    <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
+    <div class="modal-img" id="modal-img">IMAGEM</div>
+    <div class="modal-body">
+      <div class="modal-nome" id="modal-nome"></div>
+      <div class="modal-titulo" id="modal-titulo"></div>
+      <div class="modal-meta" id="modal-meta"></div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+</body>
+</html>

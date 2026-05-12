@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import Clube, Evento, Galeria, Laboratorio
 
+
 def home(request):
     clubes = Clube.objects.all()
     eventos = Evento.objects.all()
@@ -13,6 +14,15 @@ def home(request):
         'galerias': galerias,
         'laboratorio': laboratorio,
     })
+
+def clubedeleitura(request):
+    return render(request, "core/clubedeleitura.html")
+
+def clubedeteatro(request):
+    return render(request, "core/clubedeteatro.html")
+
+def programacaocultural(request):
+    return render(request, "core/programacaocultural.html")
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
@@ -46,3 +56,31 @@ def login_view(request):
             error = "Credenciais inválidas"
 
     return render(request, "registration/login.html", {"error": error})
+
+from django.http import JsonResponse
+
+def eventos_json(request):
+
+    eventos = Evento.objects.all()
+
+    data = []
+
+    for evento in eventos:
+
+        data.append({
+            "title": evento.titulo,
+
+            "start": str(evento.data_evento),
+
+            "description": evento.descricao,
+
+            "location": evento.local,
+
+            "tipo": evento.tipo_evento,
+
+            "image": evento.imagem,
+        })
+
+    return JsonResponse(data, safe=False)
+
+

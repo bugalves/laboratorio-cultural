@@ -5,3 +5,4 @@ urlpatterns = [
     path("", home, name="home"),
     path("login/", login_view, name="login"),
 ]
+path("api/eventos/")

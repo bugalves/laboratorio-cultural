@@ -1,9 +1,10 @@
+{% load static %}
 <footer>
   <div class="footer-content">
     <div class="footer-grid">
       <div>
         <img
-          src="static/images/ispgaya-logo-white.svg"
+          src="{% static 'images/ispgaya-logo-white.svg' %}"
           alt="ISPGAYA Logo"
           width="175"
         />
@@ -11,21 +12,21 @@
         <div class="social-links">
           <a href="https://www.facebook.com/ispgaya" target="_blank">
             <img
-              src="static/images/icons/facebook-icon.svg"
+              src="{% static 'images/icons/facebook-icon.svg' %}"
               alt="Facebook Icon"
               width="24"
             />
           </a>
           <a href="https://www.instagram.com/ispgaya/" target="_blank">
             <img
-              src="static/images/icons/instagram-icon.svg"
+              src="{% static 'images/icons/instagram-icon.svg' %}"
               alt="Instagram Icon"
               width="24"
             />
           </a>
           <a href="https://www.linkedin.com/school/ispgaya/" target="_blank">
             <img
-              src="static/images/icons/linkedin-icon.svg"
+              src="{% static 'images/icons/linkedin-icon.svg' %}"
               alt="LinkedIn Icon"
               width="24"
             />
@@ -75,9 +76,9 @@
         </p>
         <p>info@ispgaya.pt</p>
         <div class="certificates">
-          <img src="static/images/certificates/ISO-9001.svg" alt="ISO 9001" width="62">
-          <img src="static/images/certificates/ISO-14001.svg" alt="ISO 14001" width="62">
-          <img src="static/images/certificates/ISO-21001.svg" alt="ISO 21001" width="62">
+          <img src="{% static 'images/certificates/ISO-9001.svg' %}" alt="ISO 9001" width="62">
+          <img src="{% static 'images/certificates/ISO-14001.svg' %}" alt="ISO 14001" width="62">
+          <img src="{% static 'images/certificates/ISO-21001.svg' %}" alt="ISO 21001" width="62">
           <img src="" alt="">
           <img src="" alt="">
         </div>
@@ -100,6 +101,6 @@
     </div>
   </div>
   <div class="footer-image">
-    <img src="static/images/gaia-skyline.webp" alt="Gaia Skyline" width="795" />
+    <img src="{% static 'images/gaia-skyline.webp' %}" alt="Gaia Skyline" width="795" />
   </div>
 </footer>

@@ -5,62 +5,192 @@
   <script src="../../static/js/home.js"></script>
 </head>
 
-<body>
+<section class="programacao-section">
 
-<header>
-  <h1>Programação Cultural</h1>
-</header>
+    <div class="container">
 
-<main>
-  <!-- FILTROS -->
-  <section class="filters-section">
-    <div class="filters-label">Filtros:</div>
-    <div class="filters-row">
-      <select class="filter-select" id="f-cidade">
-        <option value="">Cidade</option>
-        <option value="Lisboa">Lisboa</option>
-        <option value="Porto">Porto</option>
-        <option value="Braga">Braga</option>
-        <option value="Coimbra">Coimbra</option>
-        <option value="Faro">Faro</option>
-      </select>
-      <select class="filter-select" id="f-tipo">
-        <option value="">Tipo de Evento</option>
-        <option value="Concerto">Concerto</option>
-        <option value="Teatro">Teatro</option>
-        <option value="Exposição">Exposição</option>
-        <option value="Festival">Festival</option>
-        <option value="Cinema">Cinema</option>
-      </select>
-      <select class="filter-select" id="f-data">
-        <option value="">Data</option>
-        <option value="hoje">Hoje</option>
-        <option value="semana">Esta semana</option>
-        <option value="mes">Este mês</option>
-      </select>
-      <button class="btn-filtrar" onclick="applyFilters()">Filtrar</button>
+        <h1 class="programacao-title">
+            Programação Cultural
+        </h1>
+
+
+        <div class="filters-wrapper">
+
+            <h2>Filtros:</h2>
+
+            <form class="filters-form">
+
+                <select>
+                    <option>Cidade</option>
+                    <option>Lisboa</option>
+                    <option>Porto</option>
+                    <option>Coimbra</option>
+                </select>
+
+                <select>
+                    <option>Tipo de Evento</option>
+                    <option>Teatro</option>
+                    <option>Clube de Leitura</option>
+                    <option>Concerto</option>
+                </select>
+
+                <input type="date">
+
+                <button type="submit">
+                    Filtrar
+                </button>
+
+            </form>
+
+        </div>
+
+        <div class="events-wrapper">
+
+            <h2>Eventos:</h2>
+
+            <div class="events-grid">
+
+                <div class="event-card">
+
+                    <div class="event-image">
+                        Imagem
+                    </div>
+
+                    <div class="event-content">
+
+                        <h3>Nome Evento</h3>
+
+                        <p>Título</p>
+
+                        <p>Cidade</p>
+
+                        <p>Data</p>
+
+                        <button onclick="toggleEvent(this)">
+                            Ver detalhes ▼
+                        </button>
+
+                    </div>
+
+                    <div class="event-details">
+
+                        <p>
+                            Pequena descrição do evento.
+                            Informações adicionais,
+                            horário e localização.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <!-- EVENTO -->
+                <div class="event-card">
+
+                    <div class="event-image">
+                        Imagem
+                    </div>
+
+                    <div class="event-content">
+
+                        <h3>Nome Evento</h3>
+
+                        <p>Título</p>
+
+                        <p>Cidade</p>
+
+                        <p>Data</p>
+
+                        <button onclick="toggleEvent(this)">
+                            Ver detalhes ▼
+                        </button>
+
+                    </div>
+
+                    <div class="event-details">
+
+                        <p>
+                            Pequena descrição do evento.
+                            Informações adicionais,
+                            horário e localização.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <!-- EVENTO -->
+                <div class="event-card">
+
+                    <div class="event-image">
+                        Imagem
+                    </div>
+
+                    <div class="event-content">
+
+                        <h3>Nome Evento</h3>
+
+                        <p>Título</p>
+
+                        <p>Cidade</p>
+
+                        <p>Data</p>
+
+                        <button onclick="toggleEvent(this)">
+                            Ver detalhes ▼
+                        </button>
+
+                    </div>
+
+                    <div class="event-details">
+
+                        <p>
+                            Pequena descrição do evento.
+                            Informações adicionais,
+                            horário e localização.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
-  </section>
 
-  <!-- EVENTOS -->
-  <section>
-    <div class="events-label">Eventos:</div>
-    <div class="events-grid" id="events-grid"></div>
-  </section>
-</main>
+</section>
 
-<!-- MODAL -->
-<div class="modal-backdrop" id="modal" onclick="closeModal(event)">
-  <div class="modal" id="modal-box">
-    <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
-    <div class="modal-img" id="modal-img">IMAGEM</div>
-    <div class="modal-body">
-      <div class="modal-nome" id="modal-nome"></div>
-      <div class="modal-titulo" id="modal-titulo"></div>
-      <div class="modal-meta" id="modal-meta"></div>
-    </div>
-  </div>
-</div>
+<script>
+
+function toggleEvent(button){
+
+    const card = button.closest('.event-card');
+
+    const isActive = card.classList.contains('active');
+
+    // fecha todos os cards primeiro
+    document.querySelectorAll('.event-card').forEach(function(item){
+
+        item.classList.remove('active');
+
+        item.querySelector('button').innerHTML = 'Ver detalhes ▼';
+
+    });
+
+    // se o atual estava fechado → abre
+    if(!isActive){
+
+        card.classList.add('active');
+
+        button.innerHTML = 'Fechar ▲';
+
+    }
+
+}
+
+</script>
 
 
 {% endblock %}

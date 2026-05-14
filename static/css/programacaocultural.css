@@ -1,0 +1,169 @@
+/* ================= PROGRAMAÇÃO ================= */
+
+
+/* ================= TÍTULO ================= */
+
+.programacao-title{
+    text-align:center;
+    font-size:4.5rem;
+    margin-bottom:60px;
+    font-weight:500;
+}
+
+/* ================= FILTROS ================= */
+
+.filters-wrapper h2{
+    font-size:3rem;
+    margin-bottom:25px;
+    color:#111;
+    font-weight:400;
+}
+
+.filters-form{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:25px;
+    margin-bottom:80px;
+}
+
+.filters-form select,
+.filters-form input{
+    height:60px;
+    background:#000;
+    color:#fff;
+    border:none;
+    padding:0 20px;
+    font-size:1.1rem;
+}
+
+.filters-form button{
+    background:#c2410c;
+    color:#fff;
+    border:none;
+    font-size:1.3rem;
+    cursor:pointer;
+    border-radius:4px;
+    transition:0.3s;
+}
+
+.filters-form button:hover{
+    opacity:0.92;
+    transform:scale(1.02);
+}
+
+/* ================= EVENTOS ================= */
+
+.events-wrapper h2{
+    font-size:3rem;
+    margin-bottom:40px;
+    font-weight:400;
+}
+
+.events-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:40px;
+
+    align-items:start;
+}
+
+/* ================= CARD ================= */
+
+.event-card{
+    background:#fff;
+    overflow:hidden;
+    border-radius:8px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.08);
+    transition:0.3s;
+}
+
+.event-card:hover{
+    transform:translateY(-5px);
+}
+
+.event-image{
+    height:320px;
+    background:#000;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:2.5rem;
+}
+
+.event-content{
+    background:#737a89;
+    color:#fff;
+    padding:30px;
+}
+
+.event-content h3{
+    font-size:2rem;
+    margin-bottom:15px;
+    font-weight:400;
+    color:#fff;
+}
+
+.event-content p{
+    font-size:1.2rem;
+    margin-bottom:10px;
+    color:#fff;
+}
+
+.event-content button{
+    margin-top:25px;
+    background:none;
+    border:none;
+    color:#f7a34b;
+    font-size:1.1rem;
+    cursor:pointer;
+}
+
+/* ================= DETALHES ================= */
+
+.event-details{
+     display:none;
+    padding:25px;
+    background:#fff;
+    color:#222;
+    line-height:1.7;
+}
+
+.event-card.active .event-details{
+    display:block;
+}
+
+/* ================= RESPONSIVO ================= */
+
+@media(max-width:1000px){
+
+    .events-grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .filters-form{
+        grid-template-columns:1fr 1fr;
+    }
+
+}
+
+@media(max-width:700px){
+
+    .programacao-title{
+        font-size:3rem;
+    }
+
+    .events-grid{
+        grid-template-columns:1fr;
+    }
+
+    .filters-form{
+        grid-template-columns:1fr;
+    }
+
+    .filters-wrapper h2,
+    .events-wrapper h2{
+        font-size:2.2rem;
+    }
+
+}

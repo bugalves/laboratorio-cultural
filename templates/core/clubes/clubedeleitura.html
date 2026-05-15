@@ -1,0 +1,95 @@
+{% extends "base.html" %} {% block content %}
+<head>
+  <link rel="stylesheet" href="../../static/css/clubeleitura.css" />
+  <link rel="stylesheet" href="../../static/css/global.css" />
+  <link
+    href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css"
+    rel="stylesheet"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+  <script src="../../static/js/clubedeleitura.js"></script>
+</head>
+
+<section class="hero">
+  <div class="container">
+    <h1>Clube de Leitura</h1>
+
+    <div class="hero-content">
+      <div class="hero-image">
+        {% if clube.imagem %}
+        <img src="{{ clube.imagem.url }}" alt="{{ clube.nome }}" />
+        {% endif %}
+      </div>
+
+      <div class="hero-text">
+        <h2>Sobre nós</h2>
+
+        <p>{{ clube.descricao }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= EVENTOS ================= -->
+
+<section class="events">
+  <div class="calendar-wrapper">
+    <h1>Eventos</h1>
+    <br />
+    <div id="calendar"></div>
+  </div>
+</section>
+
+<!-- ================= LIVROS ================= -->
+
+<section class="books">
+  <div class="container">
+    <h2>Livros em Destaque</h2>
+
+    <div class="books-grid">
+      {% for livro in livros %}
+      <div class="book-card">
+        <div class="book-image">
+          {% if livro.capa %}
+          <img src="{{ livro.capa.url }}" alt="{{ livro.titulo }}" />
+          {% else %} 📘 {% endif %}
+        </div>
+
+        <div class="book-info">
+          <h3>{{ livro.titulo }}</h3>
+
+          <button onclick="toggleBook(this)">Saber mais ▼</button>
+        </div>
+
+        <div class="book-details">
+          <p>
+            <strong>Autor:</strong>
+            {{ livro.autor }}
+          </p>
+
+          <p>{{ livro.descricao }}</p>
+        </div>
+      </div>
+      {% empty %}
+      <p>Sem livros disponíveis.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ================= FORM ================= -->
+
+<section class="join">
+  <div class="container">
+    <h2>Queres participar no clube?</h2>
+
+    <form class="join-form">
+      <input type="text" placeholder="Nome" required />
+
+      <input type="email" placeholder="Email" required />
+
+      <button type="submit">Inscrever-me</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

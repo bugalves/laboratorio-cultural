@@ -1,6 +1,8 @@
 from django.shortcuts import render
-from .models import Clube, Evento, Galeria, Laboratorio
-
+from .models import Clube, Evento, Galeria, Laboratorio, Livro
+from django.http import JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import authenticate, login
 
 def home(request):
     clubes = Clube.objects.all()
@@ -15,18 +17,45 @@ def home(request):
         'laboratorio': laboratorio,
     })
 
-def clubedeleitura(request):
-    return render(request, "core/clubedeleitura.html")
+def clube_detail(request, slug):
+    clube = get_object_or_404(Clube, slug=slug)
 
-def clubedeteatro(request):
-    return render(request, "core/clubedeteatro.html")
+    template_map = {
+        'leitura': 'core/clubes/clubedeleitura.html',
+        'teatro': 'core/clubes/clubedeteatro.html',
+    }
+
+    template = template_map.get(
+        clube.tipo,
+        'core/clubes/not-found.html'
+    )
+
+    # Se aceder a /clubes/clube-de-leitura só faz query dos livros
+    if clube.tipo == 'leitura':
+        # Retorna somente os 3 últimos livros a ser inseridos
+        livros = clube.livros.all()[:3]
+
+        return render(request, template, {
+            'clube': clube,
+            'livros': livros,
+        })
+    
+    # Se aceder a /clubes/clube-de-teatro só faz query dos eventos
+    if clube.tipo == 'teatro':
+        eventos = clube.eventos.all()
+        noticias = clube.noticias.order_by('-data_publicacao')[:3]
+
+        return render(request, template, {
+            'clube': clube,
+            'eventos': eventos,
+            'noticias': noticias
+        })
+    
+    # Se não for nenhum dos dois não retorna nenhuma informação, devolve página 'not-found.html'
+    return render(request, template)
 
 def programacaocultural(request):
     return render(request, "core/programacaocultural.html")
-
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-
 
 def login_view(request):
     error = None
@@ -57,30 +86,18 @@ def login_view(request):
 
     return render(request, "registration/login.html", {"error": error})
 
-from django.http import JsonResponse
-
 def eventos_json(request):
-
     eventos = Evento.objects.all()
-
     data = []
 
     for evento in eventos:
-
         data.append({
             "title": evento.titulo,
-
             "start": str(evento.data_evento),
-
             "description": evento.descricao,
-
             "location": evento.local,
-
             "tipo": evento.tipo_evento,
-
-            "image": evento.imagem,
+            "image": evento.imagem.url,
         })
 
     return JsonResponse(data, safe=False)
-
-

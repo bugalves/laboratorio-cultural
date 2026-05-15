@@ -31,6 +31,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Media Uploads
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
+
 # Application definition
 INSTALLED_APPS = [
     'jazzmin',

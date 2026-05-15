@@ -77,6 +77,7 @@ class ClubeAdmin(admin.ModelAdmin):
     list_display = ('nome', 'ativo', 'data_criacao', 'imagem', 'admin_actions')
     search_fields = ('nome',)
     list_filter = ('ativo',)
+    prepopulated_fields = {"slug": ("nome",)}
 
     def admin_actions(self, obj):
         return admin_actions(obj)
@@ -149,8 +150,8 @@ class NoticiaAdmin(admin.ModelAdmin):
 # ---------------- GALERIA ----------------
 @admin.register(Galeria)
 class GaleriaAdmin(admin.ModelAdmin):
-    list_display = ('titulo', 'evento', 'admin_actions')
-    search_fields = ('titulo',)
+    list_display = ('legenda', 'evento', 'admin_actions')
+    search_fields = ('legenda',)
     list_filter = ('evento',)
 
     def admin_actions(self, obj):

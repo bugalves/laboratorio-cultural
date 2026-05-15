@@ -1,0 +1,133 @@
+{% extends "base.html" %} {% block content %}
+<head>
+  <link rel="stylesheet" href="../../static/css/clubeteatro.css" />
+  <link rel="stylesheet" href="../../static/css/global.css" />
+  <link
+    href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css"
+    rel="stylesheet"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+  <script src="../../static/js/clubedeteatro.js"></script>
+</head>
+
+<section class="hero">
+  <div class="container">
+    <h1>Clube de Teatro</h1>
+
+    <div class="hero-content">
+      <div class="hero-image">
+        {% if clube.imagem %}
+        <img src="{{ clube.imagem.url }}" alt="{{ clube.nome }}" />
+        {% endif %}
+      </div>
+
+      <div class="hero-text">
+        <h2>Sobre nós</h2>
+
+        <p>{{ clube.descricao }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= EVENTOS ================= -->
+
+<section class="events">
+  <div class="calendar-wrapper">
+    <h1>Eventos</h1>
+    <br />
+    <div id="calendar"></div>
+  </div>
+</section>
+
+<!-- ================= Galeria ================= -->
+
+<section>
+  <h2>Galeria</h2>
+
+  <div class="gallery-grid">
+    {% if galerias and galerias|length > 0 %} {% for imagem in galerias %}
+    <div class="gallery-item">
+      {% if imagem.caminho_imagem %}
+      <img src="{{ imagem.caminho_imagem }}" />
+      {% else %}
+      <div class="image-missing"></div>
+      {% endif %}
+    </div>
+    {% endfor %} {% else %}
+
+    <div class="image-missing" style="width: 200px"></div>
+
+    <div>
+      <div class="image-missing" style="width: 100px"></div>
+      <div class="image-missing" style="width: 100px"></div>
+    </div>
+
+    <div>
+      <div class="image-missing" style="width: 100px"></div>
+      <div class="image-missing" style="width: 100px"></div>
+    </div>
+
+    <div class="image-missing" style="width: 200px"></div>
+
+    {% endif %}
+  </div>
+</section>
+
+<!-- ================= Noticias ================= -->
+
+<section class="news-section">
+  <h2 class="news-title">Notícias</h2>
+
+  {% for noticia in noticias %}
+  <div class="news-card">
+    <div class="news-text">
+      <h3>{{ noticia.titulo }}</h3>
+
+      <p>{{ noticia.conteudo|truncatechars:150 }}</p>
+
+      <small>{{ noticia.data_publicacao }}</small>
+    </div>
+
+    <div class="news-image">
+      {% if noticia.imagem %}
+      <img src="{{ noticia.imagem.url }}" alt="{{ noticia.titulo }}" />
+      {% endif %}
+    </div>
+  </div>
+  {% empty %}
+  <p>Sem notícias disponíveis.</p>
+
+  {% endfor %}
+  <div class="news-card">
+    <div class="news-text">
+      <h3>Notícia #1</h3>
+
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+        commodo consequat.
+      </p>
+    </div>
+
+    <div class="news-image"></div>
+  </div>
+</section>
+
+<!-- ================= FORM ================= -->
+
+<section class="join">
+  <div class="container">
+    <h2>Queres participar no clube?</h2>
+
+    <form class="join-form">
+      <input type="text" placeholder="Nome" required />
+
+      <input type="email" placeholder="Email" required />
+
+      <button type="submit">Inscrever-me</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

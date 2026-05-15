@@ -1,274 +1,264 @@
-  
-
-
-.hero h1{
-      font-size:clamp(2.5rem, 5vw, 4rem);
-      margin-bottom:40px;
-    }
-
-    .hero-content{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:40px;
-      align-items:center;
-    }
-
-    .hero-image{
-      background:#000;
-      height:450px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:#fff;
-      font-size:3rem;
-      border-radius:6px;
-      overflow:hidden;
-    }
-
-    /* Coloca uma imagem aqui */
-    .hero-image img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-    }
-
-    .hero-text{
-      background:#fff;
-      border:1px solid #ccc;
-      padding:40px;
-      border-radius:6px;
-      box-shadow:0 2px 8px rgba(0,0,0,0.05);
-    }
-
-    .hero-text h2{
-      text-align:left;
-      margin-bottom:25px;
-      font-size:2.3rem;
-    }
-
-    .hero-text p{
-      font-size:1rem;
-      color:#333;
-    }
-
-    /* ================= EVENTOS ================= */
-
-.calendar-wrapper{
-    width:100%;
-    max-width:1400px;
-    margin:auto;
-    padding:40px;
+.hero h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  margin-bottom: 40px;
 }
 
-#calendar{
-    background:white;
-    padding:30px;
-    border-radius:12px;
-    box-shadow:0 4px 20px rgba(0,0,0,0.08);
+.hero-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
 }
 
-.fc .fc-daygrid-day-frame{
-    min-height:120px;
+.hero-image {
+  background: #000;
+  height: 450px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 3rem;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
-#modalImage{
-    width:100%;
-    height:250px;
-    object-fit:cover;
-    border-radius:8px;
-    margin-bottom:20px;
+/* Coloca uma imagem aqui */
+.hero-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-#modalTitle{
-    margin-bottom:15px;
+.hero-text {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 40px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.hero-text h2 {
+  text-align: left;
+  margin-bottom: 25px;
+  font-size: 2.3rem;
+}
+
+.hero-text p {
+  font-size: 1rem;
+  color: #333;
+}
+
+/* ================= EVENTOS ================= */
+
+.calendar-wrapper {
+  width: 100%;
+  max-width: 1400px;
+  margin: auto;
+  padding: 40px;
+}
+
+#calendar {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.fc .fc-daygrid-day-frame {
+  min-height: 120px;
+}
+
+#modalImage {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+#modalTitle {
+  margin-bottom: 15px;
 }
 
 #modalDate,
-#modalLocation{
-    font-weight:bold;
-    margin-bottom:10px;
+#modalLocation {
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
-.modal-content{
-    animation:popup 0.25s ease;
+.modal-content {
+  animation: popup 0.25s ease;
 }
 
-@keyframes popup{
+@keyframes popup {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
 
-    from{
-        transform:scale(0.8);
-        opacity:0;
-    }
-
-    to{
-        transform:scale(1);
-        opacity:1;
-    }
-
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
-    /* ================= LIVROS ================= */
+/* ================= LIVROS ================= */
 
-    .books h2{
-      font-size:3rem;
-      margin-bottom:50px;
-    }
+.books h2 {
+  font-size: 3rem;
+  margin-bottom: 50px;
+}
 
-    .books-grid{
-      display:grid;
-      grid-template-columns:repeat(3, 1fr);
-      gap:30px;
-    }
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
 
-    .book-card{
-      background:#fff;
-      border-radius:8px;
-      overflow:hidden;
-      box-shadow:0 2px 8px rgba(0,0,0,0.08);
-      transition:0.3s;
-    }
+.book-card {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: 0.3s;
+}
 
-    .book-card:hover{
-      transform:translateY(-5px);
-    }
+.book-card:hover {
+  transform: translateY(-5px);
+}
 
-    .book-image{
-      background:#000;
-      height:280px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:#fff;
-      font-size:2rem;
-    }
+.book-image {
+  background: #000;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 2rem;
+}
 
-    .book-image img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-    }
+.book-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-    .book-info{
-      background:#6b7280;
-      color:#fff;
-      padding:20px;
-    }
+.book-info {
+  background: #6b7280;
+  color: #fff;
+  padding: 20px;
+}
 
-    .book-info h3{
-      margin-bottom:10px;
-      font-size:1.1rem;
-      color:#fff;
-    }
+.book-info h3 {
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+  color: #fff;
+}
 
-    .book-info button{
-      margin-top:15px;
-      background:none;
-      border:none;
-      color:#f7b36d;
-      cursor:pointer;
-      font-size:0.95rem;
-    }
+.book-info button {
+  margin-top: 15px;
+  background: none;
+  border: none;
+  color: #f7b36d;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
 
-    .book-details{
-      display:none;
-      padding:20px;
-      background:#fff;
-      color:#333;
-      border-top:1px solid #ddd;
-    }
+.book-details {
+  display: none;
+  padding: 20px;
+  background: #fff;
+  color: #333;
+  border-top: 1px solid #ddd;
+}
 
-    .book-card.active .book-details{
-      display:block;
-    }
+.book-card.active .book-details {
+  display: block;
+}
 
-    /* ================= FORM ================= */
+/* ================= FORM ================= */
 
-    .join h2{
-      font-size:3rem;
-      margin-bottom:50px;
-    }
+.join h2 {
+  font-size: 3rem;
+  margin-bottom: 50px;
+}
 
-    .join-form{
-      max-width:500px;
-      margin:auto;
-      display:flex;
-      flex-direction:column;
-      gap:20px;
-    }
+.join-form {
+  max-width: 500px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
-    .join-form input{
-      padding:16px;
-      border:none;
-      background:#000;
-      color:#fff;
-      font-size:1rem;
-    }
+.join-form input {
+  padding: 16px;
+  border: none;
+  background: #000;
+  color: #fff;
+  font-size: 1rem;
+}
 
-    .join-form input::placeholder{
-      color:#ddd;
-    }
+.join-form input::placeholder {
+  color: #ddd;
+}
 
-    .join-form button{
-      align-self:center;
-      padding:14px 40px;
-      border:none;
-      background:#c4570a;
-      color:#fff;
-      font-size:1rem;
-      cursor:pointer;
-      border-radius:4px;
-      transition:0.3s;
-    }
+.join-form button {
+  align-self: center;
+  padding: 14px 40px;
+  border: none;
+  background: #c4570a;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: 0.3s;
+}
 
-    .join-form button:hover{
-      opacity:0.9;
-      transform:scale(1.03);
-    }
+.join-form button:hover {
+  opacity: 0.9;
+  transform: scale(1.03);
+}
 
-    /* ================= RESPONSIVO ================= */
+/* ================= RESPONSIVO ================= */
 
-    @media(max-width:900px){
+@media (max-width: 900px) {
+  .hero-content {
+    grid-template-columns: 1fr;
+  }
 
-      .hero-content{
-        grid-template-columns:1fr;
-      }
+  .books-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 
-      .books-grid{
-        grid-template-columns:1fr 1fr;
-      }
+  .calendar-box {
+    font-size: 1.4rem;
+  }
+}
 
-      .calendar-box{
-        font-size:1.4rem;
-      }
+@media (max-width: 600px) {
+  section {
+    padding: 50px 0;
+  }
 
-    }
+  .books-grid {
+    grid-template-columns: 1fr;
+  }
 
-    @media(max-width:600px){
+  .hero-image {
+    height: 300px;
+  }
 
-      section{
-        padding:50px 0;
-      }
+  .hero-text {
+    padding: 25px;
+  }
 
-      .books-grid{
-        grid-template-columns:1fr;
-      }
+  .calendar-box {
+    padding: 30px;
+    font-size: 1.1rem;
+  }
 
-      .hero-image{
-        height:300px;
-      }
-
-      .hero-text{
-        padding:25px;
-      }
-
-      .calendar-box{
-        padding:30px;
-        font-size:1.1rem;
-      }
-
-      h2{
-        font-size:2.2rem !important;
-      }
-
-    }
-
+  h2 {
+    font-size: 2.2rem !important;
+  }
+}

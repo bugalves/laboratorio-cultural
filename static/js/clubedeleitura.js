@@ -1,86 +1,72 @@
-const nav = document.querySelector('nav');
+const nav = document.querySelector("nav")
 
-const observer = new ResizeObserver(entries => {
-  const height = entries[0].contentRect.height;
-  document.documentElement.style.setProperty('--nav-height', `${height}px`);
-});
+const observer = new ResizeObserver((entries) => {
+  const height = entries[0].contentRect.height
+  document.documentElement.style.setProperty("--nav-height", `${height}px`)
+})
 
-observer.observe(nav);
+observer.observe(nav)
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function () {
+  var calendarEl = document.getElementById("calendar")
 
-    var calendarEl = document.getElementById('calendar');
+  var calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: "dayGridMonth",
 
-    var calendar = new FullCalendar.Calendar(calendarEl, {
+    locale: "pt",
 
-        initialView: 'dayGridMonth',
+    events: "/api/sessoes-leitura/",
 
-        locale: 'pt',
+    eventBackgroundColor: "#c62828",
+    eventBorderColor: "#c62828",
+    eventTextColor: "#fff",
 
-        events: '/api/eventos/',
+    eventClick: function (info) {
+      document.getElementById("modalTitle").innerText = info.event.title
 
-        eventBackgroundColor: '#c62828',
-        eventBorderColor: '#c62828',
-        eventTextColor: '#fff',
+      document.getElementById("modalDate").innerText =
+        info.event.start.toLocaleDateString()
 
-        eventClick: function(info){
+      document.getElementById("modalLocation").innerText =
+        info.event.extendedProps.location || ""
 
-            document.getElementById('modalTitle').innerText =
-                info.event.title;
+      document.getElementById("modalDescription").innerText =
+        info.event.extendedProps.description || ""
 
-            document.getElementById('modalDate').innerText =
-                info.event.start.toLocaleDateString();
+      document.getElementById("modalImage").src =
+        info.event.extendedProps.image || ""
 
-            document.getElementById('modalLocation').innerText =
-                info.event.extendedProps.location || '';
+      document.getElementById("eventModal").style.display = "block"
+    },
+  })
 
-            document.getElementById('modalDescription').innerText =
-                info.event.extendedProps.description || '';
+  calendar.render()
 
-            document.getElementById('modalImage').src =
-                info.event.extendedProps.image || '';
+  // FECHAR MODAL
 
-            document.getElementById('eventModal').style.display = 'block';
-        }
+  document.querySelector(".close-modal").onclick = function () {
+    document.getElementById("eventModal").style.display = "none"
+  }
 
-    });
+  // FECHAR AO CLICAR FORA
 
-    calendar.render();
+  window.onclick = function (event) {
+    const modal = document.getElementById("eventModal")
 
-    // FECHAR MODAL
-
-    document.querySelector('.close-modal').onclick = function(){
-
-        document.getElementById('eventModal').style.display = 'none';
-
+    if (event.target == modal) {
+      modal.style.display = "none"
     }
+  }
+})
 
-    // FECHAR AO CLICAR FORA
+function toggleBook(button) {
+  const card = button.closest(".book-card")
 
-    window.onclick = function(event){
+  card.classList.toggle("active")
 
-        const modal = document.getElementById('eventModal');
-
-        if(event.target == modal){
-
-            modal.style.display = 'none';
-
-        }
-
-    }
-
-});
-
-    function toggleBook(button){
-
-      const card = button.closest('.book-card');
-
-      card.classList.toggle('active');
-
-      if(card.classList.contains('active')){
-        button.innerHTML = 'Mostrar menos ▲';
-      }else{
-        button.innerHTML = 'Saber mais ▼';
-      }
-
-    }
+  if (card.classList.contains("active")) {
+    button.innerHTML = "Mostrar menos ▲"
+  } else {
+    button.innerHTML = "Saber mais ▼"
+  }
+}

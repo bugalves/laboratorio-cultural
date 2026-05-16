@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Clube, Evento, Galeria, Laboratorio, Livro
+from .models import Clube, Evento, Galeria, Laboratorio, SessaoLeitura
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
@@ -98,6 +98,21 @@ def eventos_json(request):
             "location": evento.local,
             "tipo": evento.tipo_evento,
             "image": evento.imagem.url,
+        })
+
+    return JsonResponse(data, safe=False)
+
+def sessoes_leitura_json(request):
+    sessoes_leitura = SessaoLeitura.objects.all()
+    data = []
+
+    for sessao in sessoes_leitura:
+        data.append({
+            'title': sessao.livro.titulo,
+            'start': str(sessao.data_sessao),
+            'description': sessao.livro.descricao,
+            'location': sessao.local,
+            'image': sessao.livro.capa.url,
         })
 
     return JsonResponse(data, safe=False)

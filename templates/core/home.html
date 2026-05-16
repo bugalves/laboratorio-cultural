@@ -6,10 +6,10 @@
 <section class="hero">
   <div class="hero-content">
     {% if laboratorio.imagem %}
-  <img src="{{ laboratorio.imagem }}" width="500">
-{% else %}
-  <div class="image-missing"></div>
-{% endif %}
+    <img src="{{ laboratorio.imagem }}" width="500" />
+    {% else %}
+    <div class="image-missing"></div>
+    {% endif %}
     <div>
       <div class="hero-slogan">
         <h1>Laboratório Cultural</h1>
@@ -27,88 +27,83 @@
         criatividade e oportunidades culturais.
       </p>
       <a href="{{ laboratorio.botao_link }}" class="link-btn">
-  {{ laboratorio.botao_texto }}
-</a>
+        {{ laboratorio.botao_texto }}
+      </a>
     </div>
   </div>
 </section>
 <section>
   <h2>Clubes Culturais</h2>
   <div class="cultural-cards">
-  {% for clube in clubes %}
-<div class="card">
-  <div class="card-image">
-    {% if clube.imagem %}
-  <img src="{{ clube.imagem }}" />
-{% else %}
-  <div class="image-missing"></div>
-{% endif %}
-  </div>
-  <div class="card-details">
-    <p class="card-title">{{ clube.nome }}</p>
+    {% for clube in clubes %}
+    <div class="card">
+      {% if clube.imagem %}
+      <div class="card-image">
+        <img src="{{ clube.imagem.url }}" />
+      </div>
+      {% else %}
+      <div class="image-missing"></div>
+      {% endif %}
+      <div class="card-details">
+        <p class="card-title">{{ clube.nome }}</p>
 
-    <a href="{{ clube.link }}" class="card-link">
-      Ver mais
-    </a>
+        <a href="/clubes/{{ clube.slug }}" class="card-link">Ver mais</a>
+      </div>
+    </div>
+    {% endfor %}
   </div>
-</div>
-{% endfor %}
 </section>
 <section id="agenda-cultural">
   <h2>Agenda Cultural</h2>
   {% for evento in eventos %}
-<div class="event-section">
-  <div>
-    <p>{{ evento.descricao }}</p>
-    <p>Local: {{ evento.local }}</p>
-    <p>Data: {{ evento.data_evento }}</p>
-  </div>
+  <div class="event-section">
+    <div>
+      <h3>{{ evento.titulo }}</h3>
+      <p>{{ evento.descricao }}</p>
+      <p><span>Local:</span> {{ evento.local }}</p>
+      <p><span>Data:</span> {{ evento.data_evento }}</p>
+    </div>
 
-  <div>
     {% if evento.imagem %}
-      <img src="{{ evento.imagem }}" width="200">
+    <div class="event-image">
+      <img src="{{ evento.imagem.url }}" />
+    </div>
     {% else %}
-      <div class="image-missing"></div>
+    <div class="image-missing"></div>
     {% endif %}
   </div>
-</div>
-{% endfor %}
+  {% endfor %}
 </section>
 <section>
   <h2>Galeria</h2>
 
   <div class="gallery-grid">
-
-    {% if galerias and galerias|length > 0 %}
-
-      {% for imagem in galerias %}
-        <div class="gallery-item">
-          {% if imagem.caminho_imagem %}
-            <img src="{{ imagem.caminho_imagem }}" />
-          {% else %}
-            <div class="image-missing"></div>
-          {% endif %}
-        </div>
-      {% endfor %}
-
-    {% else %}
-
-      <div class="image-missing" style="width: 200px"></div>
+    {% if galerias and galerias|length > 0 %} {% for imagem in galerias %}
+    <div class="gallery-item">
+      {% if imagem.caminho_imagem %}
+      <img src="{{ imagem.caminho_imagem }}" />
+      {% else %}
+      <div class="image-missing"></div>
+      {% endif %}
+    </div>
+    {% endfor %} {% else %}
+    <div class="gallery-layout">
+      <div class="image-missing"></div>
 
       <div>
-        <div class="image-missing" style="width: 100px"></div>
-        <div class="image-missing" style="width: 100px"></div>
+        <div class="image-missing"></div>
+        <div class="image-missing"></div>
       </div>
 
       <div>
-        <div class="image-missing" style="width: 100px"></div>
-        <div class="image-missing" style="width: 100px"></div>
+        <div class="image-missing"></div>
+        <div class="image-missing"></div>
       </div>
 
-      <div class="image-missing" style="width: 200px"></div>
+      <div class="image-missing"></div>
+    </div>
 
     {% endif %}
-
   </div>
 </section>
 

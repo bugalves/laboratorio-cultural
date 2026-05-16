@@ -69,7 +69,6 @@ class Clube(models.Model):
     descricao = models.TextField(blank=True, null=True)
     data_criacao = models.DateField(null=True, blank=True)
     ativo = models.BooleanField(default=True)
-    link = models.CharField(max_length=255, blank=True, null=True)
     imagem = models.ImageField(upload_to='clubes/', blank=True, null=True)
 
     class Meta:

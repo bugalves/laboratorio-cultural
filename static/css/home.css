@@ -1,3 +1,7 @@
+h3 {
+  font-size: 2.5rem;
+}
+
 .hero {
   display: flex;
   flex-direction: column;
@@ -70,7 +74,9 @@
   border-radius: 16px;
   overflow: hidden; /* garante cantos arredondados nas imagens */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
   cursor: pointer;
 }
 
@@ -80,10 +86,10 @@
 }
 
 .card-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .card-image img {
@@ -152,37 +158,63 @@
   gap: 32px;
   align-items: center;
   justify-content: center;
-  width: 900px;
+  width: 1000px;
 }
 
 .event-section div:nth-child(1) {
+  width: 70%;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.event-section div p {
+.event-section div:nth-child(1) > p > span {
   font-weight: 700;
 }
 
-.event-section div p:nth-child(1) {
-  font-weight: 500;
+.event-image {
+  max-width: 30%;
 }
 
-.gallery-grid { 
-  display: flex; 
-  gap: 16px; 
-} 
-
-.gallery-grid div { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 16px; 
+.event-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
 }
 
-.image-missing { 
-  min-width: 400px; 
-  aspect-ratio: 16/9; 
-  background: #c4c4c4; 
-  border-radius: 8px; 
+.gallery-grid {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.gallery-layout {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.gallery-layout > div {
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.image-missing {
+  width: 20%;
+  aspect-ratio: 16/9;
+  background: #c4c4c4;
+  border-radius: 8px;
+}
+
+.gallery-layout > div .image-missing {
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .cultural-cards {
+    justify-content: center;
+  }
 }

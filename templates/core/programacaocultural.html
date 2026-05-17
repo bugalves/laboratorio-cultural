@@ -20,21 +20,30 @@
 
             <form class="filters-form">
 
-                <select>
-                    <option>Cidade</option>
-                    <option>Lisboa</option>
-                    <option>Porto</option>
-                    <option>Coimbra</option>
-                </select>
+               <select name="cidade">
+    <option value="" disabled selected hidden>Cidade</option>
+    {% for cidade in cidades %}
+        <option value="{{ cidade.id }}">{{ cidade.nome }}</option>
+    {% endfor %}
+</select>
 
-                <select>
-                    <option>Tipo de Evento</option>
-                    <option>Teatro</option>
-                    <option>Clube de Leitura</option>
-                    <option>Concerto</option>
-                </select>
+               <select name="tipo_evento">
+    <option value="" disabled selected hidden>Tipo de Evento</option>
+    {% for tipo in tipos %}
+        <option value="{{ tipo }}">{{ tipo }}</option>
+    {% endfor %}
+</select>
 
-                <input type="date">
+               <select name="data_evento">
+    <option value="" disabled selected hidden>Data</option>
+
+    {% for data in datas %}
+<option value="{{ data|date:'Y-m-d' }}">
+    {{ data|date:'d/m/Y' }}
+</option>
+    {% endfor %}
+
+</select>
 
                 <button type="submit">
                     Filtrar
@@ -44,121 +53,60 @@
 
         </div>
 
-        <div class="events-wrapper">
+<div class="events-wrapper">
 
-            <h2>Eventos:</h2>
+    <h2>Eventos:</h2>
 
-            <div class="events-grid">
+    <div class="events-grid">
 
-                <div class="event-card">
+        {% for evento in eventos %}
 
-                    <div class="event-image">
-                        Imagem
-                    </div>
+        <div class="event-card">
 
-                    <div class="event-content">
+            <div class="event-image">
+                {% if evento.imagem %}
+                    <img src="{{ evento.imagem.url }}">
+                {% else %}
+                    Imagem
+                {% endif %}
+            </div>
 
-                        <h3>Nome Evento</h3>
+            <div class="event-content">
 
-                        <p>Título</p>
+                <h3>{{ evento.titulo }}</h3>
 
-                        <p>Cidade</p>
+                <p>{{ evento.tipo_evento }}</p>
 
-                        <p>Data</p>
+                <p>
+                    {% if evento.cidade %}
+                        {{ evento.cidade.nome }}
+                    {% endif %}
+                </p>
 
-                        <button onclick="toggleEvent(this)">
-                            Ver detalhes ▼
-                        </button>
+                <p>{{ evento.data_evento|date:'d/m/Y' }}</p>
 
-                    </div>
+                <button onclick="toggleEvent(this)">
+                    Ver detalhes ▼
+                </button>
 
-                    <div class="event-details">
+            </div>
 
-                        <p>
-                            Pequena descrição do evento.
-                            Informações adicionais,
-                            horário e localização.
-                        </p>
+            <div class="event-details">
 
-                    </div>
-
-                </div>
-
-                <!-- EVENTO -->
-                <div class="event-card">
-
-                    <div class="event-image">
-                        Imagem
-                    </div>
-
-                    <div class="event-content">
-
-                        <h3>Nome Evento</h3>
-
-                        <p>Título</p>
-
-                        <p>Cidade</p>
-
-                        <p>Data</p>
-
-                        <button onclick="toggleEvent(this)">
-                            Ver detalhes ▼
-                        </button>
-
-                    </div>
-
-                    <div class="event-details">
-
-                        <p>
-                            Pequena descrição do evento.
-                            Informações adicionais,
-                            horário e localização.
-                        </p>
-
-                    </div>
-
-                </div>
-
-                <!-- EVENTO -->
-                <div class="event-card">
-
-                    <div class="event-image">
-                        Imagem
-                    </div>
-
-                    <div class="event-content">
-
-                        <h3>Nome Evento</h3>
-
-                        <p>Título</p>
-
-                        <p>Cidade</p>
-
-                        <p>Data</p>
-
-                        <button onclick="toggleEvent(this)">
-                            Ver detalhes ▼
-                        </button>
-
-                    </div>
-
-                    <div class="event-details">
-
-                        <p>
-                            Pequena descrição do evento.
-                            Informações adicionais,
-                            horário e localização.
-                        </p>
-
-                    </div>
-
-                </div>
+                <p>
+                    {{ evento.descricao }}
+                </p>
 
             </div>
 
         </div>
 
+        {% empty %}
+            <p>Não existem eventos.</p>
+        {% endfor %}
+
     </div>
+</div>
 
 </section>
 

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Clube, Evento, Galeria, Laboratorio, SessaoLeitura
+from .models import Clube, Evento, Galeria, Laboratorio, SessaoLeitura, Cidade
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
@@ -116,3 +116,36 @@ def sessoes_leitura_json(request):
         })
 
     return JsonResponse(data, safe=False)
+
+from django.db.models import DateField
+from django.db.models.functions import TruncDate
+
+def programacaocultural(request):
+
+    eventos = Evento.objects.all()
+
+    cidade = request.GET.get("cidade")
+    tipo = request.GET.get("tipo_evento")
+    data = request.GET.get("data_evento")
+
+    if cidade:
+        eventos = eventos.filter(cidade_id=cidade)
+
+    if tipo:
+        eventos = eventos.filter(tipo_evento=tipo)
+
+    if data:
+        eventos = eventos.filter(data_evento=data)
+
+    # 🔥 ISTO É O IMPORTANTE
+    datas = Evento.objects.exclude(data_evento__isnull=True)\
+                         .values_list("data_evento", flat=True)\
+                         .distinct().order_by("data_evento")
+
+    return render(request, "core/programacaocultural.html", {
+        "eventos": eventos,
+        "cidades": Cidade.objects.all(),
+        "tipos": Evento.objects.values_list("tipo_evento", flat=True).distinct(),
+        "datas": datas
+    })
+

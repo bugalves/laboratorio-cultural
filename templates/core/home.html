@@ -6,7 +6,7 @@
 <section class="hero">
   <div class="hero-content">
     {% if laboratorio.imagem %}
-    <img src="{{ laboratorio.imagem }}" width="500" />
+    <img src="{{ laboratorio.imagem.url }}" width="500" />
     {% else %}
     <div class="image-missing"></div>
     {% endif %}

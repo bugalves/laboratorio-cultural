@@ -140,7 +140,7 @@
     {% if galerias and galerias|length > 0 %} {% for imagem in galerias %}
     <div class="gallery-item">
       {% if imagem.caminho_imagem %}
-      <img src="{{ imagem.caminho_imagem }}" />
+      <img src="{{ imagem.imagem.url }}" />
       {% else %}
       <div class="image-missing"></div>
       {% endif %}

@@ -122,11 +122,10 @@ class LivroAdmin(admin.ModelAdmin):
     admin_actions.short_description = "Ações"
 
 
-# ---------------- SESSAO LEITURA ----------------
 @admin.register(SessaoLeitura)
 class SessaoLeituraAdmin(admin.ModelAdmin):
-    list_display = ('data_sessao', 'local', 'clube', 'livro', 'admin_actions')
-    list_filter = ('clube',)
+    list_display = ('data_sessao', 'local', 'livro', 'admin_actions')
+    search_fields = ('livro__titulo',)
 
     def admin_actions(self, obj):
         return admin_actions(obj)
@@ -150,9 +149,8 @@ class NoticiaAdmin(admin.ModelAdmin):
 # ---------------- GALERIA ----------------
 @admin.register(Galeria)
 class GaleriaAdmin(admin.ModelAdmin):
-    list_display = ('legenda', 'evento', 'admin_actions')
+    list_display = ('legenda', 'admin_actions')
     search_fields = ('legenda',)
-    list_filter = ('evento',)
 
     def admin_actions(self, obj):
         return admin_actions(obj)

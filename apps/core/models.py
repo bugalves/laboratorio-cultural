@@ -87,27 +87,20 @@ class Cidade(models.Model):
     nome = models.CharField(max_length=100)
 
     class Meta:
-        verbose_name = "Cidade❌"
-        verbose_name_plural = "Cidades❌"
+        verbose_name = "Cidade"
+        verbose_name_plural = "Cidades"
 
     def __str__(self):
         return self.nome
 
 class Livro(models.Model):
     titulo = models.CharField(max_length=150)
+    clube = models.ForeignKey(Clube, on_delete=models.CASCADE, null=True, blank=True, related_name="livros")
     autor = models.CharField(max_length=100, blank=True, null=True)
     descricao = models.TextField(blank=True, null=True)
     capa = models.ImageField(upload_to='livros/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
-    clube = models.ForeignKey(
-        Clube,
-        on_delete=models.CASCADE,
-        related_name='livros',
-        null=True,
-        blank=True
-    )
-
     class Meta:
         verbose_name = "Livro"
         verbose_name_plural = "Livros"
@@ -144,12 +137,19 @@ class SessaoLeitura(models.Model):
     data_sessao = models.DateField(null=True, blank=True)
     local = models.CharField(max_length=150, blank=True, null=True)
 
-    livro = models.ForeignKey(Livro, on_delete=models.SET_NULL, null=True, blank=True)
-    clube = models.ForeignKey(Clube, on_delete=models.CASCADE, null=True, blank=True)
+    livro = models.ForeignKey(
+        Livro,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
 
     class Meta:
         verbose_name = "Sessão de Leitura"
         verbose_name_plural = "Sessões de Leitura"
+
+    def __str__(self):
+        return f"{self.livro} - {self.data_sessao}"
 
 class Noticia(models.Model):
     titulo = models.CharField(max_length=150)
@@ -176,5 +176,5 @@ class Galeria(models.Model):
         verbose_name = "Galeria"
 
     def __str__(self):
-        return self.titulo
+        return self.legenda
     

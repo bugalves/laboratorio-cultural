@@ -33,7 +33,7 @@ def clube_detail(request, slug):
     # Se aceder a /clubes/clube-de-leitura só faz query dos livros
     if clube.tipo == 'leitura':
         # Retorna somente os 3 últimos livros a ser inseridos
-        livros = clube.livros.all()[:3]
+        livros = clube.livro_set.all()[:3]
 
         return render(request, template, {
             'clube': clube,
@@ -107,45 +107,82 @@ def sessoes_leitura_json(request):
     data = []
 
     for sessao in sessoes_leitura:
-        data.append({
-            'title': sessao.livro.titulo,
-            'start': str(sessao.data_sessao),
-            'description': sessao.livro.descricao,
-            'location': sessao.local,
-            'image': sessao.livro.capa.url,
-        })
+
+        if sessao.livro:
+
+            data.append({
+                'title': sessao.livro.titulo,
+                'start': str(sessao.data_sessao),
+                'description': sessao.livro.descricao,
+                'location': sessao.local,
+                'image': sessao.livro.capa.url if sessao.livro.capa else '',
+            })
 
     return JsonResponse(data, safe=False)
 
 from django.db.models import DateField
 from django.db.models.functions import TruncDate
 
+from itertools import chain
+
 def programacaocultural(request):
 
     eventos = Evento.objects.all()
+    sessoes = SessaoLeitura.objects.all()
 
     cidade = request.GET.get("cidade")
     tipo = request.GET.get("tipo_evento")
     data = request.GET.get("data_evento")
 
-    if cidade:
-        eventos = eventos.filter(cidade_id=cidade)
+    # 🔥 FILTRO DATA (aplica aos dois)
+    if data:
+        eventos = eventos.filter(data_evento=data)
+        sessoes = sessoes.filter(data_sessao=data)
 
+    # 🔥 FILTRO TIPO (só eventos têm tipo_evento)
     if tipo:
         eventos = eventos.filter(tipo_evento=tipo)
 
-    if data:
-        eventos = eventos.filter(data_evento=data)
+        # opcional: se quiseres filtrar sessões também por tipo
+        # podes criar lógica própria aqui depois
 
-    # 🔥 ISTO É O IMPORTANTE
-    datas = Evento.objects.exclude(data_evento__isnull=True)\
-                         .values_list("data_evento", flat=True)\
-                         .distinct().order_by("data_evento")
+    # 🔥 FILTRO CIDADE (só eventos têm cidade)
+    if cidade:
+        eventos = eventos.filter(cidade_id=cidade)
+
+    # ---------------- NORMALIZAÇÃO ----------------
+
+    programacao = []
+
+    for e in eventos:
+        programacao.append({
+            "titulo": e.titulo,
+            "descricao": e.descricao,
+            "data": e.data_evento.strftime("%d/%m/%Y") if e.data_evento else "",
+            "local": e.local,
+            "imagem": e.imagem.url if e.imagem else "",
+        })
+
+    for s in sessoes:
+        if s.livro:
+            programacao.append({
+                "titulo": s.livro.titulo,
+                "descricao": s.livro.descricao,
+                "data": s.data_sessao.strftime("%d/%m/%Y") if s.data_sessao else "",
+                "local": s.local,
+                "imagem": s.livro.capa.url if s.livro.capa else "", 
+            })
+
+    # ordenar tudo por data
+    programacao = sorted(programacao, key=lambda x: x["data"] or "")
 
     return render(request, "core/programacaocultural.html", {
-        "eventos": eventos,
+        "programacao": programacao,
         "cidades": Cidade.objects.all(),
         "tipos": Evento.objects.values_list("tipo_evento", flat=True).distinct(),
-        "datas": datas
+        "datas": Evento.objects.exclude(data_evento__isnull=True)
+                               .values_list("data_evento", flat=True)
+                               .distinct()
+                               .order_by("data_evento")
     })
 

@@ -59,47 +59,39 @@
 
     <div class="events-grid">
 
-        {% for evento in eventos %}
+        {% for item in programacao %}
 
         <div class="event-card">
 
-            <div class="event-image">
-                {% if evento.imagem %}
-                    <img src="{{ evento.imagem.url }}">
-                {% else %}
-                    Imagem
-                {% endif %}
-            </div>
+    <div class="event-image">
+        {% if item.imagem %}
+            <img src="{{ item.imagem }}">
+        {% else %}
+            Imagem
+        {% endif %}
+    </div>
 
-            <div class="event-content">
+    <div class="event-content">
 
-                <h3>{{ evento.titulo }}</h3>
+        <h3>{{ item.titulo }}</h3>
 
-                <p>{{ evento.tipo_evento }}</p>
+        <p>{{ item.tipo }}</p>
 
-                <p>
-                    {% if evento.cidade %}
-                        {{ evento.cidade.nome }}
-                    {% endif %}
-                </p>
+        <p>{{ item.local }}</p>
 
-                <p>{{ evento.data_evento|date:'d/m/Y' }}</p>
+        <p>{{ item.data }}</p>
 
-                <button onclick="toggleEvent(this)">
-                    Ver detalhes ▼
-                </button>
+        <button onclick="toggleEvent(this)">
+            Ver detalhes ▼
+        </button>
 
-            </div>
+    </div>
 
-            <div class="event-details">
+    <div class="event-details">
+        <p>{{ item.descricao }}</p>
+    </div>
 
-                <p>
-                    {{ evento.descricao }}
-                </p>
-
-            </div>
-
-        </div>
+</div>
 
         {% empty %}
             <p>Não existem eventos.</p>

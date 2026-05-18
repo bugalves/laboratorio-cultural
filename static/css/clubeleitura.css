@@ -173,7 +173,11 @@
   border-top: 1px solid #ddd;
 }
 
-.book-card.active .book-details {
+.book-card {
+    position: relative;
+}
+
+.book-card.active > .book-details {
   display: block;
 }
 

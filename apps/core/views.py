@@ -33,7 +33,7 @@ def clube_detail(request, slug):
     # Se aceder a /clubes/clube-de-leitura só faz query dos livros
     if clube.tipo == 'leitura':
         # Retorna somente os 3 últimos livros a ser inseridos
-        livros = clube.livro_set.all()[:3]
+        livros = clube.livros.all()[:3]
 
         return render(request, template, {
             'clube': clube,

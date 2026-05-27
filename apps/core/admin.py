@@ -5,7 +5,7 @@ from django.urls import reverse
 
 from .models import (
     Utilizador, Laboratorio, Clube, Cidade,
-    Evento, Livro, SessaoLeitura, Noticia, Galeria
+    Evento, Livro, SessaoLeitura, Noticia, Galeria, SessaoTeatro
 )
 
 admin.site.site_header = "Admin ISPGAYA"
@@ -97,17 +97,36 @@ class CidadeAdmin(admin.ModelAdmin):
     admin_actions.short_description = "Ações"
 
 
-# ---------------- EVENTO ----------------
 @admin.register(Evento)
 class EventoAdmin(admin.ModelAdmin):
-    list_display = ('titulo', 'data_evento', 'local', 'tipo_evento', 'admin_actions')
-    search_fields = ('titulo', 'local')
-    list_filter = ('tipo_evento', 'data_evento')
+    list_display = (
+        'titulo',
+        'data_evento',
+        'local',
+        'cidade',
+        'tipo_evento',
+        'vagas',
+        'inscritos',
+        'admin_actions'
+    )
+
+    list_filter = ('tipo_evento', 'cidade')
+    search_fields = ('titulo', 'local', 'cidade__nome')
+
+    filter_horizontal = ("participantes",)
+
+    readonly_fields = ("lista_participantes",)
+
+    def inscritos(self, obj):
+        return obj.participantes.count()
+
+    def lista_participantes(self, obj):
+        return ", ".join([u.email for u in obj.participantes.all()])
+
+    lista_participantes.short_description = "Inscritos"
 
     def admin_actions(self, obj):
         return admin_actions(obj)
-
-    admin_actions.short_description = "Ações"
 
 
 # ---------------- LIVRO ----------------
@@ -124,13 +143,58 @@ class LivroAdmin(admin.ModelAdmin):
 
 @admin.register(SessaoLeitura)
 class SessaoLeituraAdmin(admin.ModelAdmin):
-    list_display = ('data_sessao', 'local', 'livro', 'admin_actions')
-    search_fields = ('livro__titulo',)
+    list_display = (
+        'data_sessao',
+        'local',
+        'cidade',
+        'livro',
+        'vagas',
+        'inscritos',
+        'admin_actions'
+    )
+
+    list_filter = ('cidade',)
+    search_fields = ('livro__titulo', 'local', 'cidade__nome')
+
+    filter_horizontal = ("participantes",)
+
+    readonly_fields = ("lista_participantes",)
+
+    def lista_participantes(self, obj):
+        return ", ".join([u.email for u in obj.participantes.all()])
+
+    lista_participantes.short_description = "Inscritos"
 
     def admin_actions(self, obj):
         return admin_actions(obj)
 
-    admin_actions.short_description = "Ações"
+
+@admin.register(SessaoTeatro)
+class SessaoTeatroAdmin(admin.ModelAdmin):
+    list_display = (
+        'titulo',
+        'data_sessao',
+        'local',
+        'cidade',
+        'vagas',
+        'inscritos',
+        'admin_actions'
+    )
+
+    list_filter = ('cidade',)
+    search_fields = ('titulo', 'local', 'cidade__nome')
+
+    filter_horizontal = ("participantes",)
+
+    readonly_fields = ("lista_participantes",)
+
+    def lista_participantes(self, obj):
+        return ", ".join([u.email for u in obj.participantes.all()])
+
+    lista_participantes.short_description = "Inscritos"
+
+    def admin_actions(self, obj):
+        return admin_actions(obj)
 
 
 # ---------------- NOTICIA ----------------

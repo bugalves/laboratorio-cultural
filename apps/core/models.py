@@ -111,31 +111,52 @@ class Livro(models.Model):
 
 class Evento(models.Model):
     titulo = models.CharField(max_length=150)
-    descricao = models.TextField(blank=True, null=True)
+
+    descricao = models.TextField(null=True, blank=True)
+
     data_evento = models.DateField(null=True, blank=True)
-    local = models.CharField(max_length=150, blank=True, null=True)
-    tipo_evento = models.CharField(max_length=100, blank=True, null=True)
-    imagem = models.ImageField(upload_to='eventos/', blank=True, null=True)
 
-    class Meta:
-        verbose_name = "Evento"
-        verbose_name_plural = "Agenda Cultural"
+    local = models.CharField(max_length=150, null=True, blank=True)
 
-    cidade = models.ForeignKey(Cidade, on_delete=models.SET_NULL, null=True, blank=True)
-    clube = models.ForeignKey(
-        Clube,
-        on_delete=models.CASCADE,
-        related_name='eventos',
+    cidade = models.ForeignKey(
+        Cidade,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True
     )
 
-    def __str__(self):
-        return self.titulo
+    tipo_evento = models.CharField(max_length=100, null=True, blank=True)
+
+    imagem = models.ImageField(upload_to='eventos/', null=True, blank=True)
+
+    vagas = models.PositiveIntegerField(default=100)
+
+    participantes = models.ManyToManyField(
+        Utilizador,
+        blank=True,
+        related_name="eventos"
+    )
+
+    def inscritos(self):
+        return self.participantes.count()
+
+    def vagas_restantes(self):
+        return self.vagas - self.participantes.count()
+
+    def lotado(self):
+        return self.vagas_restantes() <= 0
 
 class SessaoLeitura(models.Model):
     data_sessao = models.DateField(null=True, blank=True)
-    local = models.CharField(max_length=150, blank=True, null=True)
+
+    local = models.CharField(max_length=150, null=True, blank=True)
+
+    cidade = models.ForeignKey(
+        Cidade,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
 
     livro = models.ForeignKey(
         Livro,
@@ -144,12 +165,58 @@ class SessaoLeitura(models.Model):
         blank=True
     )
 
-    class Meta:
-        verbose_name = "Sessão de Leitura"
-        verbose_name_plural = "Sessões de Leitura"
+    vagas = models.PositiveIntegerField(default=20)
 
-    def __str__(self):
-        return f"{self.livro} - {self.data_sessao}"
+    participantes = models.ManyToManyField(
+        Utilizador,
+        blank=True,
+        related_name="sessoes_leitura"
+    )
+
+    def inscritos(self):
+        return self.participantes.count()
+
+    def vagas_restantes(self):
+        return self.vagas - self.participantes.count()
+
+    def lotado(self):
+        return self.vagas_restantes() <= 0
+
+
+class SessaoTeatro(models.Model):
+    titulo = models.CharField(max_length=150)
+
+    descricao = models.TextField(null=True, blank=True)
+
+    data_sessao = models.DateField(null=True, blank=True)
+
+    local = models.CharField(max_length=150, null=True, blank=True)
+
+    cidade = models.ForeignKey(
+        Cidade,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    imagem = models.ImageField(upload_to='teatro/', null=True, blank=True)
+
+    vagas = models.PositiveIntegerField(default=50)
+
+    participantes = models.ManyToManyField(
+        Utilizador,
+        blank=True,
+        related_name="sessoes_teatro"
+    )
+
+    def inscritos(self):
+        return self.participantes.count()
+
+    def vagas_restantes(self):
+        return self.vagas - self.participantes.count()
+
+    def lotado(self):
+        return self.vagas_restantes() <= 0
 
 class Noticia(models.Model):
     titulo = models.CharField(max_length=150)

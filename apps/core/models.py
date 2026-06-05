@@ -1,7 +1,8 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.db import models
 from django.utils.text import slugify
-from django.utils import timezone
+from django.core.exceptions import ValidationError
+from django.db.models import Q
 
 class UtilizadorManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -20,9 +21,9 @@ class UtilizadorManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
+
 class Utilizador(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
-
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
@@ -43,6 +44,7 @@ class Utilizador(AbstractBaseUser, PermissionsMixin):
         verbose_name = "Utilizador"
         verbose_name_plural = "Utilizadores"
 
+
 class Laboratorio(models.Model):
     imagem = models.ImageField(upload_to='laboratorio/', blank=True, null=True)
     botao_texto = models.CharField(max_length=100, default="Ver atividades")
@@ -50,6 +52,7 @@ class Laboratorio(models.Model):
 
     class Meta:
         verbose_name = "Laboratório"
+
 
 class Clube(models.Model):
     TIPOS_CLUBE = [
@@ -83,6 +86,7 @@ class Clube(models.Model):
             self.slug = slugify(self.nome)
         super().save(*args, **kwargs)
 
+
 class Cidade(models.Model):
     nome = models.CharField(max_length=100)
 
@@ -92,6 +96,7 @@ class Cidade(models.Model):
 
     def __str__(self):
         return self.nome
+
 
 class Livro(models.Model):
     titulo = models.CharField(max_length=150)
@@ -109,46 +114,46 @@ class Livro(models.Model):
     def __str__(self):
         return self.titulo
 
-class Evento(models.Model):
+
+# Classe abstrata para definir o atributo vagas e as propriedades de contagem de inscritos, vagas restantes e estado de lotação
+# para as 3 entidades que o utilizam, prevenindo código duplicado
+class Atividade(models.Model):
+    vagas = models.PositiveIntegerField(default=20)
+
+    class Meta:
+        abstract = True
+
+    @property
+    def inscritos(self):
+        return self.inscricoes.count()
+
+    @property
+    def vagas_restantes(self):
+        return self.vagas - self.inscritos
+
+    @property
+    def lotado(self):
+        return self.vagas_restantes <= 0
+
+
+class Evento(Atividade):
     titulo = models.CharField(max_length=150)
-
     descricao = models.TextField(null=True, blank=True)
-
     data_evento = models.DateField(null=True, blank=True)
-
     local = models.CharField(max_length=150, null=True, blank=True)
-
-    cidade = models.ForeignKey(
-        Cidade,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True
-    )
-
     tipo_evento = models.CharField(max_length=100, null=True, blank=True)
-
     imagem = models.ImageField(upload_to='eventos/', null=True, blank=True)
 
-    vagas = models.PositiveIntegerField(default=100)
-
-    participantes = models.ManyToManyField(
-        Utilizador,
-        blank=True,
-        related_name="eventos"
+    cidade = models.ForeignKey(
+        Cidade,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
     )
 
-    def inscritos(self):
-        return self.participantes.count()
 
-    def vagas_restantes(self):
-        return self.vagas - self.participantes.count()
-
-    def lotado(self):
-        return self.vagas_restantes() <= 0
-
-class SessaoLeitura(models.Model):
+class SessaoLeitura(Atividade):
     data_sessao = models.DateField(null=True, blank=True)
-
     local = models.CharField(max_length=150, null=True, blank=True)
 
     cidade = models.ForeignKey(
@@ -157,7 +162,6 @@ class SessaoLeitura(models.Model):
         null=True,
         blank=True
     )
-
     livro = models.ForeignKey(
         Livro,
         on_delete=models.SET_NULL,
@@ -165,32 +169,13 @@ class SessaoLeitura(models.Model):
         blank=True
     )
 
-    vagas = models.PositiveIntegerField(default=20)
 
-    participantes = models.ManyToManyField(
-        Utilizador,
-        blank=True,
-        related_name="sessoes_leitura"
-    )
-
-    def inscritos(self):
-        return self.participantes.count()
-
-    def vagas_restantes(self):
-        return self.vagas - self.participantes.count()
-
-    def lotado(self):
-        return self.vagas_restantes() <= 0
-
-
-class SessaoTeatro(models.Model):
+class SessaoTeatro(Atividade):
     titulo = models.CharField(max_length=150)
-
     descricao = models.TextField(null=True, blank=True)
-
     data_sessao = models.DateField(null=True, blank=True)
-
     local = models.CharField(max_length=150, null=True, blank=True)
+    imagem = models.ImageField(upload_to='teatro/', null=True, blank=True)
 
     cidade = models.ForeignKey(
         Cidade,
@@ -199,24 +184,101 @@ class SessaoTeatro(models.Model):
         blank=True
     )
 
-    imagem = models.ImageField(upload_to='teatro/', null=True, blank=True)
 
-    vagas = models.PositiveIntegerField(default=50)
-
-    participantes = models.ManyToManyField(
+class Inscricao(models.Model):
+    utilizador = models.ForeignKey(
         Utilizador,
-        blank=True,
-        related_name="sessoes_teatro"
+        on_delete=models.CASCADE
     )
 
-    def inscritos(self):
-        return self.participantes.count()
+    evento = models.ForeignKey(
+        Evento,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="inscricoes"
+    )
 
-    def vagas_restantes(self):
-        return self.vagas - self.participantes.count()
+    sessao_leitura = models.ForeignKey(
+        SessaoLeitura,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="inscricoes"
+    )
 
-    def lotado(self):
-        return self.vagas_restantes() <= 0
+    sessao_teatro = models.ForeignKey(
+        SessaoTeatro,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="inscricoes"
+    )
+
+    data_inscricao = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    @property
+    def atividade(self):
+        return (
+            self.evento
+            or self.sessao_leitura
+            or self.sessao_teatro
+        )
+
+    def clean(self):
+        campos_preenchidos = sum([
+            self.evento is not None,
+            self.sessao_leitura is not None,
+            self.sessao_teatro is not None,
+        ])
+
+        if campos_preenchidos != 1:
+            raise ValidationError(
+                "A inscrição deve estar associada a exatamente uma atividade."
+            )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["utilizador", "evento"],
+                name="unique_evento_inscricao"
+            ),
+            models.UniqueConstraint(
+                fields=["utilizador", "sessao_leitura"],
+                name="unique_leitura_inscricao"
+            ),
+            models.UniqueConstraint(
+                fields=["utilizador", "sessao_teatro"],
+                name="unique_teatro_inscricao"
+            ),
+            models.CheckConstraint(
+            condition=(
+                (
+                    Q(evento__isnull=False) &
+                    Q(sessao_leitura__isnull=True) &
+                    Q(sessao_teatro__isnull=True)
+                ) |
+                (
+                    Q(evento__isnull=True) &
+                    Q(sessao_leitura__isnull=False) &
+                    Q(sessao_teatro__isnull=True)
+                ) |
+                (
+                    Q(evento__isnull=True) &
+                    Q(sessao_leitura__isnull=True) &
+                    Q(sessao_teatro__isnull=False)
+                )
+            ),
+            name="exactly_one_activity"
+        ),
+        ]
+
 
 class Noticia(models.Model):
     titulo = models.CharField(max_length=150)
@@ -232,6 +294,7 @@ class Noticia(models.Model):
 
     def __str__(self):
         return self.titulo
+
 
 class Galeria(models.Model):
     legenda = models.CharField(max_length=150, blank=True, null=True)

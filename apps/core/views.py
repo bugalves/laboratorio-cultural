@@ -1,16 +1,19 @@
+import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, update_session_auth_hash, logout
 from django.contrib.auth.decorators import login_required
 
 from .models import (
+    Utilizador,
     Clube,
     Evento,
     Galeria,
     Laboratorio,
     SessaoLeitura,
     Cidade,
-    SessaoTeatro
+    SessaoTeatro,
+    Inscricao
 )
 
 
@@ -149,43 +152,123 @@ def calendario_leitura_json(request, slug):
 
     return JsonResponse(data, safe=False)
 
-
-# ---------------- LOGIN ----------------
+# ---------------- AUTH ----------------
 def login_view(request):
-
     error = None
+    next_url = request.GET.get("next")
 
     if request.method == "POST":
-
         email = request.POST.get("email")
         password = request.POST.get("password")
+        next_url = request.POST.get("next")
 
         user = authenticate(request, username=email, password=password)
 
         if user is not None:
-
-            if not user.is_superuser and not email.endswith("@ispgaya.pt"):
-                error = "Apenas emails @ispgaya.pt são permitidos"
-                return render(request, "registration/login.html", {"error": error})
-
             login(request, user)
 
+            # ADMIN
             if user.is_superuser or user.nivel in ["admin", "moderador"]:
                 user.is_staff = True
                 user.save()
                 return redirect("/admin/")
-
+            
+            if next_url:
+                return redirect(next_url)
             return redirect("/")
 
         else:
             error = "Credenciais inválidas"
 
-    return render(request, "registration/login.html", {"error": error})
+    return render(
+        request,
+        "registration/login.html",
+        {
+            "error": error,
+            "next": next_url
+        }
+    )
 
+
+def register_view(request):
+    error = None
+
+    if request.method == "POST":
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        password_confirm = request.POST.get("password_confirm")
+        
+        if not email or not password:
+            error = "Preenche todos os campos"
+        elif password != password_confirm:
+            error = "As passwords não coincidem"
+        elif Utilizador.objects.filter(email=email).exists():
+            error = "Este email já está registado"
+        else:
+            user = Utilizador.objects.create_user(
+                email=email,
+                password=password
+            )
+
+            # Login após registo
+            user = authenticate(
+                request,
+                username=email,
+                password=password
+            )
+
+            if user:
+                login(request, user)
+                return redirect("/")
+            return redirect("/")
+
+    return render(
+        request,
+        "registration/register.html",
+        {"error": error}
+    )
+
+
+@login_required
+def update_user(request):
+    if request.method != "PUT":
+        return JsonResponse(
+            {"error": "Método não permitido"},
+            status=405
+        )
+
+    data = json.loads(
+        request.body.decode("utf-8")
+    )
+
+    email = data.get("email")
+    password = data.get("password")
+    user = request.user
+
+    if email:
+        user.email = email
+
+    if password:
+        user.set_password(password)
+
+    user.save()
+
+    update_session_auth_hash(
+        request,
+        user
+    )
+
+    return JsonResponse({
+        "success": True
+    })
+
+
+def logout_view(request):
+    logout(request)
+    return redirect("/")
 
 # ---------------- PROGRAMAÇÃO CULTURAL ----------------
 def programacaocultural(request):
-
     eventos = Evento.objects.all()
     sessoes = SessaoLeitura.objects.all()
 
@@ -206,28 +289,88 @@ def programacaocultural(request):
     programacao = []
 
     for e in eventos:
+        ja_inscrito = False
+
+        if request.user.is_authenticated:
+            ja_inscrito = Inscricao.objects.filter(
+                utilizador=request.user,
+                evento=e
+            ).exists()
+
         programacao.append({
+            "id": e.id,
             "titulo": e.titulo,
             "descricao": e.descricao,
             "data": e.data_evento.strftime("%d/%m/%Y") if e.data_evento else "",
             "local": e.local,
             "imagem": e.imagem.url if e.imagem else "",
+            "vagas": e.vagas,
+            "inscritos": e.inscritos,
+            "ja_inscrito": ja_inscrito,
+            "type": "evento",
+            "type_label": "Evento",
         })
 
     for s in sessoes:
         if s.livro:
+            ja_inscrito = False
+
+            if request.user.is_authenticated:
+                ja_inscrito = Inscricao.objects.filter(
+                    utilizador=request.user,
+                    sessao_leitura=s
+                ).exists()
+
             programacao.append({
                 "titulo": s.livro.titulo,
                 "descricao": s.livro.descricao,
                 "data": s.data_sessao.strftime("%d/%m/%Y") if s.data_sessao else "",
                 "local": s.local,
                 "imagem": s.livro.capa.url if s.livro.capa else "",
+                "vagas": s.vagas,
+                "inscritos": s.inscritos,
+                "ja_inscrito": ja_inscrito,
+                "type": "sessao_leitura",
+                "type_label": "Sessão de Leitura",
             })
 
     programacao = sorted(programacao, key=lambda x: x["data"] or "")
 
+    inscricoes_modal = []
+
+    if request.user.is_authenticated:
+        inscricoes = (
+            Inscricao.objects
+            .filter(utilizador=request.user)
+            .select_related(
+                "evento",
+                "sessao_leitura",
+                "sessao_teatro"
+            )
+        )
+
+        for i in inscricoes:
+            atividade = i.atividade
+
+            inscricoes_modal.append({
+                "id": i.id,
+                "titulo": getattr(
+                    atividade,
+                    "titulo",
+                    None
+                ) or (
+                    atividade.livro.titulo
+                    if hasattr(atividade, "livro")
+                    and atividade.livro
+                    else "Sem título"
+                ),
+                "local": atividade.local,
+                "tipo": atividade.__class__.__name__,
+            })
+
     return render(request, "core/programacaocultural.html", {
         "programacao": programacao,
+        "inscricoes": inscricoes_modal,
         "cidades": Cidade.objects.all(),
         "tipos": Evento.objects.values_list("tipo_evento", flat=True).distinct(),
         "datas": Evento.objects.exclude(
@@ -236,33 +379,78 @@ def programacaocultural(request):
     })
 
 @login_required
-def participar_evento(request, tipo, evento_id):
+def inscrever(request):
+    data = json.loads(request.body)
+    tipo = data.get("tipo")
+    objeto_id = data.get("id")
 
-    if request.method != "POST":
-        return JsonResponse({"error": "Método inválido"}, status=400)
+    modelos = {
+        "evento": Evento,
+        "sessao_leitura": SessaoLeitura,
+        "sessao_teatro": SessaoTeatro,
+    }
 
-    if tipo == "leitura":
-        obj = get_object_or_404(SessaoLeitura, id=evento_id)
+    model = modelos.get(tipo)
 
-    elif tipo == "teatro":
-        obj = get_object_or_404(SessaoTeatro, id=evento_id)
+    if not model:
+        return JsonResponse(
+            {"error": "Tipo inválido"},
+            status=400
+        )
 
-    elif tipo == "evento":
-        obj = get_object_or_404(Evento, id=evento_id)
+    objeto = get_object_or_404(
+        model,
+        pk=objeto_id
+    )
 
+    if objeto.lotado:
+        return JsonResponse(
+            {"error": "Sem vagas"},
+            status=400
+        )
+
+    filtros = {
+        "utilizador": request.user
+    }
+
+    if tipo == "evento":
+        filtros["evento"] = objeto
+    elif tipo == "sessao_leitura":
+        filtros["sessao_leitura"] = objeto
     else:
-        return JsonResponse({"error": "Tipo inválido"}, status=400)
+        filtros["sessao_teatro"] = objeto
 
-    if request.user in obj.participantes.all():
-        return JsonResponse({"error": "Já inscrito"}, status=400)
-
-    if hasattr(obj, "lotado") and obj.lotado():
-        return JsonResponse({"error": "Lotado"}, status=400)
-
-    obj.participantes.add(request.user)
+    inscricao, created = Inscricao.objects.get_or_create(
+        **filtros
+    )
 
     return JsonResponse({
         "success": True,
-        "inscritos": obj.participantes.count(),
-        "vagas_restantes": obj.vagas - obj.participantes.count() if hasattr(obj, "vagas") else None
+        "created": created
+    })
+
+
+@login_required
+def cancelar_inscricao(request, inscricao_id):
+    if request.method != "DELETE":
+        return JsonResponse(
+            {"error": "Método não permitido"},
+            status=405
+        )
+
+    try:
+        inscricao = Inscricao.objects.get(
+            id=inscricao_id,
+            utilizador=request.user
+        )
+    except Inscricao.DoesNotExist:
+        return JsonResponse(
+            {"error": "Inscrição não encontrada"},
+            status=404
+        )
+
+    inscricao.delete()
+
+    return JsonResponse({
+        "success": True
     })

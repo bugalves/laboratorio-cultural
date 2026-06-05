@@ -113,12 +113,8 @@ class EventoAdmin(admin.ModelAdmin):
     list_filter = ('tipo_evento', 'cidade')
     search_fields = ('titulo', 'local', 'cidade__nome')
 
-    filter_horizontal = ("participantes",)
-
     readonly_fields = ("lista_participantes",)
 
-    def inscritos(self, obj):
-        return obj.participantes.count()
 
     def lista_participantes(self, obj):
         return ", ".join([u.email for u in obj.participantes.all()])
@@ -156,8 +152,6 @@ class SessaoLeituraAdmin(admin.ModelAdmin):
     list_filter = ('cidade',)
     search_fields = ('livro__titulo', 'local', 'cidade__nome')
 
-    filter_horizontal = ("participantes",)
-
     readonly_fields = ("lista_participantes",)
 
     def lista_participantes(self, obj):
@@ -183,8 +177,6 @@ class SessaoTeatroAdmin(admin.ModelAdmin):
 
     list_filter = ('cidade',)
     search_fields = ('titulo', 'local', 'cidade__nome')
-
-    filter_horizontal = ("participantes",)
 
     readonly_fields = ("lista_participantes",)
 

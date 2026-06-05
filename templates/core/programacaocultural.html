@@ -1,138 +1,201 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} {% block content %} {% load static %}
 <head>
-  <link rel="stylesheet" href="../../static/css/programacaocultural.css" />
-  <link rel="stylesheet" href="../../static/css/global.css" />
-  <script src="../../static/js/home.js"></script>
+  <link rel="stylesheet" href="{% static 'css/programacaocultural.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/global.css' %}" />
+  <script src="{% static 'js/home.js' %}"></script>
+  <script src="{% static 'js/programacaocultural.js' %}"></script>
+  <script>
+    const isAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
+  </script>
 </head>
 
 <section class="programacao-section">
+  <div class="container">
+    <h1 class="programacao-title">Programação Cultural</h1>
 
-    <div class="container">
+    <div class="filters-wrapper">
+      <h2>Filtros:</h2>
 
-        <h1 class="programacao-title">
-            Programação Cultural
-        </h1>
+      <form class="filters-form">
+        <select name="cidade">
+          <option value="" disabled selected hidden>Cidade</option>
+          {% for cidade in cidades %}
+          <option value="{{ cidade.id }}">{{ cidade.nome }}</option>
+          {% endfor %}
+        </select>
 
+        <select name="tipo_evento">
+          <option value="" disabled selected hidden>Tipo de Evento</option>
+          {% for tipo in tipos %}
+          <option value="{{ tipo }}">{{ tipo }}</option>
+          {% endfor %}
+        </select>
 
-        <div class="filters-wrapper">
+        <select name="data_evento">
+          <option value="" disabled selected hidden>Data</option>
+          {% for data in datas %}
+          <option value="{{ data|date:'Y-m-d' }}">
+            {{ data|date:'d/m/Y' }}
+          </option>
+          {% endfor %}
+        </select>
 
-            <h2>Filtros:</h2>
+        <button type="submit">Filtrar</button>
+      </form>
+    </div>
+    <div class="events-wrapper">
+      <h2>Eventos:</h2>
 
-            <form class="filters-form">
+      <div class="events-grid">
+        {% for item in programacao %}
+        <div
+          class="event-card"
+          data-event-id="{{ item.id }}"
+          data-event-type="{{ item.type }}"
+        >
+          <div class="event-hero">
+            <div>
+              <span class="event-badges event-type-badge"
+                >{{ item.type_label }}</span
+              >
+              <div class="event-slots-badge">
+                <span class="event-badges"
+                  >{{ item.inscritos}} / {{ item.vagas}}</span
+                >
+              </div>
+            </div>
+            {% if item.imagem %}
+            <img src="{{ item.imagem }}" />
+            {% endif %}
+          </div>
 
-               <select name="cidade">
-    <option value="" disabled selected hidden>Cidade</option>
-    {% for cidade in cidades %}
-        <option value="{{ cidade.id }}">{{ cidade.nome }}</option>
-    {% endfor %}
-</select>
+          <div class="event-content">
+            <h3>{{ item.titulo }}</h3>
 
-               <select name="tipo_evento">
-    <option value="" disabled selected hidden>Tipo de Evento</option>
-    {% for tipo in tipos %}
-        <option value="{{ tipo }}">{{ tipo }}</option>
-    {% endfor %}
-</select>
+            <div class="event-content-item">
+              <img
+                src="{% static 'images/icons/map-pin.svg' %}"
+                alt="Localização do evento"
+              />
+              <p>{{ item.local }}</p>
+            </div>
 
-               <select name="data_evento">
-    <option value="" disabled selected hidden>Data</option>
+            <div class="event-content-item">
+              <img
+                src="{% static 'images/icons/calendar-days.svg' %}"
+                alt="Localização do evento"
+              />
+              <p>{{ item.data }}</p>
+            </div>
 
-    {% for data in datas %}
-<option value="{{ data|date:'Y-m-d' }}">
-    {{ data|date:'d/m/Y' }}
-</option>
-    {% endfor %}
+            <div class="event-actions">
+              <button class="btn-toggle" onclick="toggleEvent(this)">
+                Ver detalhes ▼
+              </button>
 
-</select>
+              {% if item.ja_inscrito %}
+              <button disabled>Inscrito ✓</button>
+              {% else %} {% if item.inscritos == item.vagas%}
+              <button disabled>Lotado</button>
+              {% else %}
+              <button class="btn-inscrever" onclick="inscrever(this)">
+                Inscrever
+              </button>
+              {% endif %} {% endif %}
+            </div>
+          </div>
 
-                <button type="submit">
-                    Filtrar
-                </button>
+          <div class="event-details">
+            <p>{{ item.descricao }}</p>
+          </div>
+        </div>
+        {% empty %}
+        <p>Não existem eventos.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% if user.is_authenticated %}
+  <div class="profile-badge">
+    <button class="profile-button" onclick="toggleProfileMenu()">
+      <img src="{% static 'images/icons/user.svg' %}" alt="Perfil" />
+    </button>
 
-            </form>
+    <div class="profile-dropdown" id="profileDropdown">
+      <button onclick="openInscricoesModal()">Gerir Inscrições</button>
 
+      <button onclick="openPerfilModal()">Gerir Perfil</button>
+
+      <hr />
+
+      <a href="{% url 'logout' %}">Terminar Sessão</a>
+    </div>
+  </div>
+  <div class="modal-overlay" id="inscricoesModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>As Minhas Inscrições</h2>
+
+        <button class="btn-close-modal" onclick="closeInscricoesModal()">
+          ✕
+        </button>
+      </div>
+
+      <div class="inscricoes-container">
+        {% for inscricao in inscricoes %}
+        <div class="inscricao-card">
+          <span class="event-type-badge">{{ inscricao.tipo }}</span>
+
+          <h3>{{ inscricao.titulo }}</h3>
+
+          <div class="event-meta">
+            <span>{{ inscricao.local }}</span>
+
+            <span>{{ inscricao.data }}</span>
+          </div>
+
+          <button
+            class="btn-cancelar"
+            data-id="{{ inscricao.id }}"
+            onclick="cancelarInscricao(this)"
+          >
+            Cancelar inscrição
+          </button>
         </div>
 
-<div class="events-wrapper">
-
-    <h2>Eventos:</h2>
-
-    <div class="events-grid">
-
-        {% for item in programacao %}
-
-        <div class="event-card">
-
-    <div class="event-image">
-        {% if item.imagem %}
-            <img src="{{ item.imagem }}">
-        {% else %}
-            Imagem
-        {% endif %}
-    </div>
-
-    <div class="event-content">
-
-        <h3>{{ item.titulo }}</h3>
-
-        <p>{{ item.tipo }}</p>
-
-        <p>{{ item.local }}</p>
-
-        <p>{{ item.data }}</p>
-
-        <button onclick="toggleEvent(this)">
-            Ver detalhes ▼
-        </button>
-
-    </div>
-
-    <div class="event-details">
-        <p>{{ item.descricao }}</p>
-    </div>
-
-</div>
-
         {% empty %}
-            <p>Não existem eventos.</p>
+        <p>Não possui inscrições.</p>
         {% endfor %}
-
+      </div>
     </div>
-</div>
+  </div>
+  <div class="modal-overlay" id="perfilModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Gerir Perfil</h2>
 
+        <button class="btn-close-modal" onclick="closePerfilModal()">✕</button>
+      </div>
+
+      <form onSubmit="atualizarPerfil()" class="profile-form">
+        <div class="form-group">
+          <label>Email</label>
+          <input
+            type="email"
+            id="emailInput"
+            value="{{ request.user.email }}"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Nova Password</label>
+          <input type="password" id="passwordInput" />
+        </div>
+
+        <button type="submit" class="btn-save">Guardar Alterações</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
 </section>
-
-<script>
-
-function toggleEvent(button){
-
-    const card = button.closest('.event-card');
-
-    const isActive = card.classList.contains('active');
-
-    // fecha todos os cards primeiro
-    document.querySelectorAll('.event-card').forEach(function(item){
-
-        item.classList.remove('active');
-
-        item.querySelector('button').innerHTML = 'Ver detalhes ▼';
-
-    });
-
-    // se o atual estava fechado → abre
-    if(!isActive){
-
-        card.classList.add('active');
-
-        button.innerHTML = 'Fechar ▲';
-
-    }
-
-}
-
-</script>
-
-
 {% endblock %}
-</body>
-</html>

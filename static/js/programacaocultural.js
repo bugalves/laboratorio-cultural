@@ -45,9 +45,7 @@ function inscrever(btn) {
       return res.json()
     })
     .then((data) => {
-      btn.innerText = "Inscrito ✔"
-      btn.disabled = true
-      btn.style.background = "#16a34a"
+      location.reload()
     })
     .catch((err) => {
       console.error(err)

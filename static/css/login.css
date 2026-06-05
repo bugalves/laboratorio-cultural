@@ -79,4 +79,19 @@ footer > span {
   color: white;
   align-self: end;
   font-size: 14px;
+  margin-right: 8px;
+}
+
+.redirect {
+  margin-top: 12px;
+  color: #f1f1f1;
+}
+
+.redirect > a {
+  color: #f1f1f1;
+}
+
+.redirect > a:hover {
+  color: #f1f1f1;
+  text-decoration: underline;
 }

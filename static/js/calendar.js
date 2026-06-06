@@ -18,12 +18,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const eventsUrl = calendarEl.dataset.eventsUrl
 
-  // ================= MODAL =================
-  const modal = document.getElementById("event-modal")
+  // ================= CALENDAR MODAL (ISOLADO) =================
+  const modal = document.getElementById("calendar-event-modal")
   const modalTitle = document.getElementById("modal-title")
   const modalDate = document.getElementById("modal-date")
   const modalDescription = document.getElementById("modal-description")
-  const modalClose = document.getElementById("modal-close")
+  const modalClose = document.getElementById("calendar-modal-close")
 
   function openModal(event) {
 
@@ -44,13 +44,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if (localEl) localEl.textContent = event.extendedProps?.local || "-"
     if (cidadeEl) cidadeEl.textContent = event.extendedProps?.cidade || "-"
 
-    if (vagasEl) {
-      const restantes =
-        (event.extendedProps?.vagas || 0) -
-        (event.extendedProps?.inscritos || 0)
-
-      vagasEl.textContent = restantes >= 0 ? restantes : 0
-    }
+      if (vagasEl) {
+        vagasEl.textContent =
+          event.extendedProps?.vagas_restantes ?? "-"
+      }
 
     if (btn) {
       btn.dataset.id = event.id
@@ -92,7 +89,6 @@ document.addEventListener("DOMContentLoaded", function () {
 })
 
 
-// ================= PARTICIPAR =================
 document.addEventListener("click", function (e) {
 
   const btn = e.target.closest("#modal-participar")
@@ -114,13 +110,25 @@ document.addEventListener("click", function (e) {
     if (data.success) {
       alert("Inscrição feita com sucesso!")
 
-      document.getElementById("modal-vagas").textContent =
-        data.vagas_restantes
+      const vagasEl = document.getElementById("modal-vagas")
+      if (vagasEl && data.vagas_restantes !== undefined) {
+        vagasEl.textContent = data.vagas_restantes
+      }
 
-    } else {
+    } 
+    else if (data.already) {
+      alert("Já estás inscrito nesta atividade.")
+    } 
+    else {
       alert(data.error || "Erro ao inscrever")
     }
+
   })
+  .catch(err => {
+    console.error(err)
+    alert("Tem que estar autenticado para se inscrever.")
+  })
+
 })
 
 function getCSRFToken() {
@@ -129,4 +137,3 @@ function getCSRFToken() {
     .find(row => row.startsWith("csrftoken="))
     ?.split("=")[1]
 }
-

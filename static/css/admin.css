@@ -1,0 +1,142 @@
+/* =========================
+   BASE
+========================= */
+
+body, .content-wrapper {
+    background-color: #f5f5f5 !important;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.main-sidebar,
+aside.main-sidebar,
+.app-sidebar {
+    background-color: #273240 !important;
+}
+
+/* BRAND / LOGO */
+.brand-link {
+    background-color: #FB923C !important;
+    color: #273240 !important;
+    font-weight: 700;
+    border: none !important;
+}
+
+/* MENU LINKS */
+.nav-sidebar .nav-link {
+    color: #FFFFFF !important;
+    border-radius: 6px;
+}
+
+/* HOVER */
+.nav-sidebar .nav-link:hover {
+    background-color: rgba(251, 146, 60, 0.15) !important;
+    color: #FFFFFF !important;
+}
+
+/* ACTIVE ITEM */
+.nav-sidebar .nav-link.active {
+    background-color: #C2410C !important;
+    color: #FFFFFF !important;
+}
+
+/* ICONS */
+.nav-sidebar .nav-icon {
+    color: #FB923C !important;
+}
+
+/* =========================
+   NAVBAR TOP
+========================= */
+
+.navbar {
+    background-color: #FB923C !important;
+    color: #273240 !important;
+}
+
+/* =========================
+   TITLES
+========================= */
+
+.content-header h1 {
+    color: #C2410C !important;
+    font-weight: 600;
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.card {
+    border-radius: 10px !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    transition: 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+/* =========================
+   TABLES
+========================= */
+
+.table thead th {
+    background-color: #273240 !important;
+    color: white !important;
+}
+
+/* =========================
+   LINKS
+========================= */
+
+a {
+    color: #C2410C;
+}
+
+a:hover {
+    color: #FB923C;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+/* PRIMARY */
+.btn-primary,
+.default,
+input.default {
+    background-color: #FB923C !important;
+    border-color: #FB923C !important;
+    color: #273240 !important;
+}
+
+/* ADD */
+.addlink,
+.btn-success {
+    background-color: #C2410C !important;
+    border-color: #C2410C !important;
+    color: white !important;
+}
+
+/* INFO / CHANGE */
+.changelink,
+.btn-info {
+    background-color: #273240 !important;
+    color: white !important;
+}
+
+/* DELETE */
+.deletelink {
+    background-color: #C2410C !important;
+    color: white !important;
+}
+
+/* GLOBAL BUTTON STYLE */
+.btn,
+button,
+input[type="submit"] {
+    border-radius: 6px !important;
+}

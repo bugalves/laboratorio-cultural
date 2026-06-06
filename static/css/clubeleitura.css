@@ -173,13 +173,10 @@
   border-top: 1px solid #ddd;
 }
 
-.book-card {
-    position: relative;
-}
 
-.book-card.active > .book-details {
-  display: block;
-}
+
+
+
 
 /* ================= FORM ================= */
 
@@ -294,6 +291,15 @@
   max-width: 90%;
 }
 
+.modal-participar{
+  border: none;
+  cursor: pointer;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
 .hidden {
   display: none;
 }
@@ -303,3 +309,4 @@
   cursor: pointer;
   font-size: 20px;
 }
+

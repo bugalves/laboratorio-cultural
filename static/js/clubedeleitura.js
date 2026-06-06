@@ -1,17 +1,36 @@
-
-
 function toggleBook(button) {
-  const card = button.closest(".book-card")
+  const card = button.closest(".book-card");
+  const details = card.querySelector(".book-details");
 
-  card.classList.toggle("active")
+  // Fecha todos os outros
+  document.querySelectorAll(".book-card").forEach(c => {
+    if (c === card) return;
+    c.querySelector(".book-details").style.display = "none";
+    c.querySelector("button").innerHTML = "Saber mais ▼";
+  });
 
-  if (card.classList.contains("active")) {
-    button.innerHTML = "Mostrar menos ▲"
+  // Toggle só neste
+  if (details.style.display === "block") {
+    details.style.display = "none";
+    button.innerHTML = "Saber mais ▼";
   } else {
-    button.innerHTML = "Saber mais ▼"
+    details.style.display = "block";
+    button.innerHTML = "Mostrar menos ▲";
   }
 }
 
 
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.querySelector(".join-form");
 
+  if (form) {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      alert("Inscrição realizada com sucesso!");
+
+      this.reset();
+    });
+  }
+});
 

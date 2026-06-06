@@ -7,52 +7,106 @@
   font-weight: 500;
 }
 
-/* ================= FILTROS ================= */
+/* ================= FILTROS MODERNOS ================= */
 
-.filters-wrapper h2 {
-  font-size: 3rem;
-  margin-bottom: 25px;
-  color: #111;
-  font-weight: 400;
+.filters-wrapper {
+  margin-bottom: 60px;
 }
 
+/* título */
+.filters-wrapper h2 {
+  font-size: 2.8rem;
+  font-weight: 500;
+  margin-bottom: 20px;
+  color: #111;
+}
+
+/* grid dos filtros */
 .filters-form {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 25px;
-  margin-bottom: 80px;
+  gap: 18px;
+  align-items: center;
+  padding: 18px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
+/* inputs e selects */
 .filters-form select,
 .filters-form input {
-  height: 60px;
-  background: #000;
-  color: #fff;
-  border: none;
-  padding: 0 20px;
-  font-size: 1.1rem;
+  height: 52px;
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #f9fafb;
+  color: #111;
+  padding: 0 14px;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.25s ease;
 }
 
+/* hover leve */
+.filters-form select:hover,
+.filters-form input:hover {
+  border-color: rgba(251, 146, 60, 0.5);
+}
+
+/* focus estilo moderno */
+.filters-form select:focus,
+.filters-form input:focus {
+  border-color: #fb923c;
+  box-shadow: 0 0 0 4px rgba(251, 146, 60, 0.15);
+  background: #fff;
+}
+
+/* options */
 .filters-form select option {
   background: #fff;
-  color: #000;
+  color: #111;
 }
 
+/* botão filtrar estilo “pill moderno” */
 .filters-form button {
-  background: #c2410c;
-  color: #fff;
+  height: 52px;
+  border-radius: 12px;
   border: none;
-  font-size: 1.3rem;
+  background: linear-gradient(135deg, #fb923c, #f97316);
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 600;
   cursor: pointer;
-  border-radius: 4px;
-  transition: 0.3s;
+  transition: all 0.25s ease;
+  box-shadow: 0 8px 18px rgba(251, 146, 60, 0.25);
 }
 
+/* hover botão */
 .filters-form button:hover {
-  opacity: 0.92;
-  transform: scale(1.02);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(251, 146, 60, 0.35);
 }
 
+/* active */
+.filters-form button:active {
+  transform: scale(0.98);
+}
+
+/* RESPONSIVO */
+@media (max-width: 1000px) {
+  .filters-form {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .filters-form {
+    grid-template-columns: 1fr;
+    padding: 14px;
+  }
+}
 /* ================= EVENTOS ================= */
 
 .events-wrapper h2 {
@@ -308,10 +362,6 @@ button {
   gap: 10px;
 }
 
-.inscricao-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
-}
 
 .inscricao-card h3 {
   font-size: 1.1rem;
@@ -403,9 +453,6 @@ button {
     grid-template-columns: 1fr 1fr;
   }
 
-  .filters-form {
-    grid-template-columns: 1fr 1fr;
-  }
 }
 
 @media (max-width: 700px) {
@@ -417,12 +464,4 @@ button {
     grid-template-columns: 1fr;
   }
 
-  .filters-form {
-    grid-template-columns: 1fr;
-  }
-
-  .filters-wrapper h2,
-  .events-wrapper h2 {
-    font-size: 2.2rem;
-  }
 }

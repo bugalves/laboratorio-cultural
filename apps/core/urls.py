@@ -18,4 +18,6 @@ urlpatterns = [
     path("api/calendario-teatro/<slug:slug>/", views.calendario_teatro_json),
     path("api/inscrever", views.inscrever),
     path("api/inscricoes/<int:inscricao_id>", views.cancelar_inscricao, name="cancelar_inscricao"),
+    path("participar/<str:tipo>/<int:id>/", views.participar, name="participar"),
+    path("api/evento/<int:id>/", views.evento_detail),
 ]

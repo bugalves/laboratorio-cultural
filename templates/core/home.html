@@ -1,15 +1,20 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} 
+{% load static %}
+
+ {% block content %}
 <head>
   <link rel="stylesheet" href="static/css/home.css" />
   <script src="static/js/home.js"></script>
+  <script src="{% static 'js/programacaocultural.js' %}"></script>
+
 </head>
 <section class="hero">
   <div class="hero-content">
-    {% if laboratorio.imagem %}
-    <img src="{{ laboratorio.imagem.url }}" width="500" />
-    {% else %}
-    <div class="image-missing"></div>
-    {% endif %}
+   <img 
+  src="{% static 'images/lg-laboratorio cultural.webp' %}" 
+  alt="Laboratório Cultural"
+  style="width:500px; height:300px; object-fit:cover;"
+>
     <div>
       <div class="hero-slogan">
         <h1>Laboratório Cultural</h1>
@@ -26,8 +31,8 @@
         a comunidade envolvente. Uma plataforma dinâmica que aproxima talento,
         criatividade e oportunidades culturais.
       </p>
-      <a href="{{ laboratorio.botao_link }}" class="link-btn">
-        {{ laboratorio.botao_texto }}
+      <a href="/programacaocultural" class="link-btn">
+        Ver Atividades
       </a>
     </div>
   </div>
@@ -133,37 +138,7 @@
   </div>
   {% endfor %}
 </section>
-<section>
-  <h2>Galeria</h2>
 
-  <div class="gallery-grid">
-    {% if galerias and galerias|length > 0 %} {% for imagem in galerias %}
-    <div class="gallery-item">
-      {% if imagem.caminho_imagem %}
-      <img src="{{ imagem.imagem.url }}" />
-      {% else %}
-      <div class="image-missing"></div>
-      {% endif %}
-    </div>
-    {% endfor %} {% else %}
-    <div class="gallery-layout">
-      <div class="image-missing"></div>
-
-      <div>
-        <div class="image-missing"></div>
-        <div class="image-missing"></div>
-      </div>
-
-      <div>
-        <div class="image-missing"></div>
-        <div class="image-missing"></div>
-      </div>
-
-      <div class="image-missing"></div>
-    </div>
-
-    {% endif %}
-  </div>
-</section>
 
 {% endblock %}
+

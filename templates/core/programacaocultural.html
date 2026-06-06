@@ -2,9 +2,27 @@
 <head>
   <link rel="stylesheet" href="{% static 'css/programacaocultural.css' %}" />
   <link rel="stylesheet" href="{% static 'css/global.css' %}" />
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
   <script src="{% static 'js/home.js' %}"></script>
   <script src="{% static 'js/programacaocultural.js' %}"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+
   <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      flatpickr("#dateRange", {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        locale:"pt",
+        firstDayOfWeek: 1,
+        rangeSeparator: " to " 
+      });
+    });
+
     const isAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
   </script>
 </head>
@@ -13,36 +31,41 @@
   <div class="container">
     <h1 class="programacao-title">Programação Cultural</h1>
 
-    <div class="filters-wrapper">
-      <h2>Filtros:</h2>
+<div class="filters-wrapper">
+  <h2>Filtros:</h2>
 
-      <form class="filters-form">
-        <select name="cidade">
-          <option value="" disabled selected hidden>Cidade</option>
-          {% for cidade in cidades %}
-          <option value="{{ cidade.id }}">{{ cidade.nome }}</option>
-          {% endfor %}
-        </select>
+  <form method="GET" class="filters-form">
 
-        <select name="tipo_evento">
-          <option value="" disabled selected hidden>Tipo de Evento</option>
-          {% for tipo in tipos %}
-          <option value="{{ tipo }}">{{ tipo }}</option>
-          {% endfor %}
-        </select>
+    <!-- CIDADE -->
+    <select name="cidade">
+      <option value="">Cidade</option>
+      {% for cidade in cidades %}
+        <option value="{{ cidade.id }}">
+          {{ cidade.nome }}
+        </option>
+      {% endfor %}
+    </select>
 
-        <select name="data_evento">
-          <option value="" disabled selected hidden>Data</option>
-          {% for data in datas %}
-          <option value="{{ data|date:'Y-m-d' }}">
-            {{ data|date:'d/m/Y' }}
-          </option>
-          {% endfor %}
-        </select>
+    <!-- TIPO (EVENTO / LEITURA / TEATRO) -->
+    <select name="tipo_atividade">
+      <option value="">Todos os tipos</option>
+      <option value="evento">Eventos</option>
+      <option value="leitura">Clube de Leitura</option>
+      <option value="teatro">Clube de Teatro</option>
+    </select>
 
-        <button type="submit">Filtrar</button>
-      </form>
-    </div>
+  <input
+    type="text"
+    name="date_range"
+    id="dateRange"
+    placeholder="Data ou intervalo"
+  />
+
+    <button type="submit">Filtrar</button>
+
+  </form>
+</div>
+
     <div class="events-wrapper">
       <h2>Eventos:</h2>
 

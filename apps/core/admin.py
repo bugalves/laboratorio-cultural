@@ -4,8 +4,8 @@ from django.utils.html import format_html
 from django.urls import reverse
 
 from .models import (
-    Utilizador, Laboratorio, Clube, Cidade,
-    Evento, Livro, SessaoLeitura, Noticia, Galeria, SessaoTeatro
+    Utilizador, Clube, Cidade,
+    Evento, Livro, SessaoLeitura, Noticia, SessaoTeatro, Galeria
 )
 
 admin.site.site_header = "Admin ISPGAYA"
@@ -60,16 +60,6 @@ class UtilizadorAdmin(UserAdmin):
     admin_actions.short_description = "Ações"
 
 
-# ---------------- LABORATORIO ----------------
-@admin.register(Laboratorio)
-class LaboratorioAdmin(admin.ModelAdmin):
-    list_display = ('imagem', 'botao_texto', 'botao_link', 'admin_actions')
-
-    def admin_actions(self, obj):
-        return admin_actions(obj)
-
-    admin_actions.short_description = "Ações"
-
 
 # ---------------- CLUBE ----------------
 @admin.register(Clube)
@@ -99,6 +89,7 @@ class CidadeAdmin(admin.ModelAdmin):
 
 @admin.register(Evento)
 class EventoAdmin(admin.ModelAdmin):
+
     list_display = (
         'titulo',
         'data_evento',
@@ -110,26 +101,29 @@ class EventoAdmin(admin.ModelAdmin):
         'admin_actions'
     )
 
-    list_filter = ('tipo_evento', 'cidade')
-    search_fields = ('titulo', 'local', 'cidade__nome')
-
     readonly_fields = ("lista_participantes",)
 
-
     def lista_participantes(self, obj):
-        return ", ".join([u.email for u in obj.participantes.all()])
-
+        return ", ".join(
+            obj.inscricoes.select_related("utilizador")
+            .values_list("utilizador__email", flat=True)
+        )
     lista_participantes.short_description = "Inscritos"
 
     def admin_actions(self, obj):
         return admin_actions(obj)
 
+    admin_actions.short_description = "Ações"
 
 # ---------------- LIVRO ----------------
 @admin.register(Livro)
 class LivroAdmin(admin.ModelAdmin):
     list_display = ('titulo', 'autor', 'admin_actions')
+
     search_fields = ('titulo', 'autor')
+
+    # REMOVE o campo clube do formulário do admin
+    exclude = ('clube',)
 
     def admin_actions(self, obj):
         return admin_actions(obj)
@@ -139,6 +133,7 @@ class LivroAdmin(admin.ModelAdmin):
 
 @admin.register(SessaoLeitura)
 class SessaoLeituraAdmin(admin.ModelAdmin):
+
     list_display = (
         'data_sessao',
         'local',
@@ -155,16 +150,22 @@ class SessaoLeituraAdmin(admin.ModelAdmin):
     readonly_fields = ("lista_participantes",)
 
     def lista_participantes(self, obj):
-        return ", ".join([u.email for u in obj.participantes.all()])
+        return ", ".join(
+            obj.inscricoes.select_related("utilizador")
+            .values_list("utilizador__email", flat=True)
+        )
 
     lista_participantes.short_description = "Inscritos"
 
     def admin_actions(self, obj):
         return admin_actions(obj)
 
+    admin_actions.short_description = "Ações"
+
 
 @admin.register(SessaoTeatro)
 class SessaoTeatroAdmin(admin.ModelAdmin):
+
     list_display = (
         'titulo',
         'data_sessao',
@@ -181,12 +182,17 @@ class SessaoTeatroAdmin(admin.ModelAdmin):
     readonly_fields = ("lista_participantes",)
 
     def lista_participantes(self, obj):
-        return ", ".join([u.email for u in obj.participantes.all()])
+        return ", ".join(
+            obj.inscricoes.select_related("utilizador")
+            .values_list("utilizador__email", flat=True)
+        )
 
     lista_participantes.short_description = "Inscritos"
 
     def admin_actions(self, obj):
         return admin_actions(obj)
+
+    admin_actions.short_description = "Ações"
 
 
 # ---------------- NOTICIA ----------------
@@ -196,19 +202,20 @@ class NoticiaAdmin(admin.ModelAdmin):
     search_fields = ('titulo',)
     list_filter = ('data_publicacao',)
 
+    exclude = ('clube',)
+
     def admin_actions(self, obj):
         return admin_actions(obj)
 
     admin_actions.short_description = "Ações"
 
 
-# ---------------- GALERIA ----------------
 @admin.register(Galeria)
 class GaleriaAdmin(admin.ModelAdmin):
-    list_display = ('legenda', 'admin_actions')
+    list_display = ('legenda', 'imagem', 'acoes')
     search_fields = ('legenda',)
 
-    def admin_actions(self, obj):
+    def acoes(self, obj):
         return admin_actions(obj)
 
-    admin_actions.short_description = "Ações"
+    acoes.short_description = "Ações"

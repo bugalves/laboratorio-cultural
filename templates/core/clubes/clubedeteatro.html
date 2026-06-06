@@ -1,11 +1,13 @@
 {% extends "base.html" %} {% block content %} {% load static %}
 <head>
-  <link rel="stylesheet" href="{% static 'css/clubeteatro.css' %}" />
-  <link rel="stylesheet" href="{% static 'css/global.css' %}" />
+
   <link
     href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css"
     rel="stylesheet"
   />
+  <link rel="stylesheet" href="{% static 'css/custom-calendar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/clubeteatro.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/global.css' %}" />
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
   <script>
   const clubeSlug = "{{ clube.slug }}"
@@ -45,37 +47,28 @@
 </section>
 
 <!-- ================= Galeria ================= -->
-
-<section>
-  <h2>Galeria</h2>
-
-  <div class="gallery-grid">
-    {% if galerias and galerias|length > 0 %} {% for imagem in galerias %}
-    <div class="gallery-item">
-      {% if imagem.caminho_imagem %}
-      <img src="{{ imagem.caminho_imagem }}" />
-      {% else %}
-      <div class="image-missing"></div>
-      {% endif %}
-    </div>
-    {% endfor %} {% else %}
+<section class="gallery">
+  <div class="container">
+    <h2>Galeria</h2>
+<br>
     <div class="gallery-layout">
-      <div class="image-missing"></div>
-
-      <div>
-        <div class="image-missing"></div>
-        <div class="image-missing"></div>
-      </div>
-
-      <div>
-        <div class="image-missing"></div>
-        <div class="image-missing"></div>
-      </div>
-
-      <div class="image-missing"></div>
+      {% for img in galerias %}
+        <div class="gallery-item {% cycle 'tall' 'short' 'short' 'tall' 'short' %}">
+          {% if img.imagem %}
+            <img src="{{ img.imagem.url }}" alt="{{ img.legenda }}" />
+            {% if img.legenda %}
+              <div class="gallery-overlay">
+                <p>{{ img.legenda }}</p>
+              </div>
+            {% endif %}
+          {% else %}
+            <div class="image-missing"></div>
+          {% endif %}
+        </div>
+      {% empty %}
+        <p>Sem imagens na galeria.</p>
+      {% endfor %}
     </div>
-
-    {% endif %}
   </div>
 </section>
 
@@ -121,23 +114,30 @@
   </div>
 </section>
 
-<div id="event-modal" class="modal hidden">
+<div id="calendar-event-modal" class="modal hidden">
   <div class="modal-content">
 
-    <span id="modal-close">&times;</span>
+    <span id="calendar-modal-close">✖</span>
 
     <h2 id="modal-title"></h2>
-
     <p id="modal-date"></p>
-
+     <br>
     <p id="modal-description"></p>
+     <br>
 
     <p><strong>Local:</strong> <span id="modal-local"></span></p>
+     <br>
     <p><strong>Cidade:</strong> <span id="modal-cidade"></span></p>
+     <br>
     <p><strong>Vagas restantes:</strong> <span id="modal-vagas"></span></p>
+     <br>
 
-<button id="modal-participar">Participar</button>
+    <button id="modal-participar" class="modal-participar">
+      Participar
+    </button>
 
   </div>
 </div>
+
+
 {% endblock %}

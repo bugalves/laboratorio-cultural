@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.utils import timezone
 
 class UtilizadorManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -45,14 +46,6 @@ class Utilizador(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = "Utilizadores"
 
 
-class Laboratorio(models.Model):
-    imagem = models.ImageField(upload_to='laboratorio/', blank=True, null=True)
-    botao_texto = models.CharField(max_length=100, default="Ver atividades")
-    botao_link = models.CharField(max_length=255, default="#")
-
-    class Meta:
-        verbose_name = "Laboratório"
-
 
 class Clube(models.Model):
     TIPOS_CLUBE = [
@@ -81,10 +74,6 @@ class Clube(models.Model):
     def __str__(self):
         return self.nome
 
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.nome)
-        super().save(*args, **kwargs)
 
 
 class Cidade(models.Model):
@@ -94,29 +83,39 @@ class Cidade(models.Model):
         verbose_name = "Cidade"
         verbose_name_plural = "Cidades"
 
+    def clean(self):
+        self.nome = self.nome.strip().title()
+
+        if Cidade.objects.filter(nome__iexact=self.nome).exclude(pk=self.pk).exists():
+            raise ValidationError("Essa cidade já existe.")
+
     def __str__(self):
         return self.nome
 
 
 class Livro(models.Model):
     titulo = models.CharField(max_length=150)
-    clube = models.ForeignKey(Clube, on_delete=models.CASCADE, null=True, blank=True, related_name="livros")
-    autor = models.CharField(max_length=100, blank=True, null=True)
+    clube = models.ForeignKey(
+        Clube,
+        on_delete=models.PROTECT,
+        related_name="livros",
+        null=True,
+        blank=True
+    )
+
+    autor = models.CharField(max_length=100)
     descricao = models.TextField(blank=True, null=True)
-    capa = models.ImageField(upload_to='livros/', blank=True, null=True)
+    capa = models.ImageField(upload_to='livros/')
     created_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        verbose_name = "Livro"
-        verbose_name_plural = "Livros"
-        ordering = ['-created_at']
+
+    def save(self, *args, **kwargs):
+        if not self.clube_id:
+            self.clube = Clube.objects.get(tipo='leitura')
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.titulo
 
-
-# Classe abstrata para definir o atributo vagas e as propriedades de contagem de inscritos, vagas restantes e estado de lotação
-# para as 3 entidades que o utilizam, prevenindo código duplicado
 class Atividade(models.Model):
     vagas = models.PositiveIntegerField(default=20)
 
@@ -151,38 +150,52 @@ class Evento(Atividade):
         blank=True
     )
 
+    def clean(self):
+        if self.data_evento and self.data_evento < timezone.now().date():
+            raise ValidationError("Não podes criar eventos em datas passadas.")
+
+
 
 class SessaoLeitura(Atividade):
-    data_sessao = models.DateField(null=True, blank=True)
-    local = models.CharField(max_length=150, null=True, blank=True)
+    data_sessao = models.DateField()
+    local = models.CharField(max_length=150)
 
     cidade = models.ForeignKey(
         Cidade,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True
+        on_delete=models.PROTECT
     )
+
     livro = models.ForeignKey(
         Livro,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True
+        on_delete=models.PROTECT
     )
+
+def clean(self):
+    if self.data_sessao and self.data_sessao < timezone.now().date():
+        raise ValidationError(
+            "Não podes criar sessões de leitura em datas passadas."
+        )
+
 
 
 class SessaoTeatro(Atividade):
     titulo = models.CharField(max_length=150)
-    descricao = models.TextField(null=True, blank=True)
-    data_sessao = models.DateField(null=True, blank=True)
-    local = models.CharField(max_length=150, null=True, blank=True)
-    imagem = models.ImageField(upload_to='teatro/', null=True, blank=True)
+    descricao = models.TextField(max_length=3000)
+    data_sessao = models.DateField()
+    local = models.CharField(max_length=150)
+    imagem = models.ImageField(upload_to='teatro/')
 
     cidade = models.ForeignKey(
         Cidade,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True
+        on_delete=models.PROTECT
     )
+
+def clean(self):
+    if self.data_sessao and self.data_sessao < timezone.now().date():
+        raise ValidationError(
+            "Não podes criar sessões de leitura em datas passadas."
+        )
+
 
 
 class Inscricao(models.Model):
@@ -239,9 +252,6 @@ class Inscricao(models.Model):
                 "A inscrição deve estar associada a exatamente uma atividade."
             )
 
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
 
     class Meta:
         constraints = [
@@ -282,29 +292,33 @@ class Inscricao(models.Model):
 
 class Noticia(models.Model):
     titulo = models.CharField(max_length=150)
-    conteudo = models.TextField(blank=True, null=True)
-    data_publicacao = models.DateField(null=True, blank=True)
-    imagem = models.ImageField(upload_to='noticias/', blank=True, null=True)
+    conteudo = models.TextField(max_length=5000)
+    data_publicacao = models.DateField()
+    imagem = models.ImageField(upload_to='noticias/')
 
-    clube = models.ForeignKey(Clube, on_delete=models.CASCADE, related_name='noticias', null=True, blank=True)
+    clube = models.ForeignKey(
+        Clube,
+        on_delete=models.CASCADE,
+        related_name='noticias',
+        null=True,
+        blank=True
+    )
 
-    class Meta:
-        verbose_name = "Notícia"
-        verbose_name_plural = "Notícias"
-
-    def __str__(self):
-        return self.titulo
+    def save(self, *args, **kwargs):
+        if not self.clube_id:
+            self.clube = Clube.objects.get(tipo='teatro')
+        super().save(*args, **kwargs)
 
 
 class Galeria(models.Model):
     legenda = models.CharField(max_length=150, blank=True, null=True)
-    imagem = models.ImageField(upload_to='galeria/', blank=True, null=True)
+    imagem = models.ImageField(upload_to='galeria/teatro/')
 
-    evento = models.ForeignKey(Evento, on_delete=models.CASCADE, null=True, blank=True)
+    data_criacao = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Galeria"
+        verbose_name = "Galeria Teatro"
+        verbose_name_plural = "Galeria Teatro"
 
     def __str__(self):
-        return self.legenda
-    
+        return self.legenda or "Imagem Teatro"

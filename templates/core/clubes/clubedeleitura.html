@@ -1,11 +1,12 @@
   {% extends "base.html" %} {% block content %} {% load static %}
   <head>
-    <link rel="stylesheet" href="{% static 'css/clubeleitura.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/global.css' %}" />
     <link
       href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="{% static 'css/clubeleitura.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/global.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/custom-calendar.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script>
   const clubeSlug = "{{ clube.slug }}"
@@ -38,7 +39,7 @@
 
   <section class="events">
     <div class="calendar-wrapper">
-      <h1>Sessões de Leitura</h1>
+      <h1>Eventos</h1>
       <br />
       <div id="calendar" data-events-url="/api/calendario-leitura/{{ clube.slug }}/"></div>
     </div>
@@ -97,19 +98,28 @@
     </div>
   </section>
 
-  <div id="event-modal" class="modal hidden">
+<div id="calendar-event-modal" class="modal hidden">
   <div class="modal-content">
-    <span id="modal-close">&times;</span>
+
+    <span id="calendar-modal-close">✖</span>
 
     <h2 id="modal-title"></h2>
     <p id="modal-date"></p>
+     <br>
     <p id="modal-description"></p>
-
-        <p><strong>Local:</strong> <span id="modal-local"></span></p>
+    <br>
+    <p><strong>Local:</strong> <span id="modal-local"></span></p>
+ <br>
     <p><strong>Cidade:</strong> <span id="modal-cidade"></span></p>
+     <br>
     <p><strong>Vagas restantes:</strong> <span id="modal-vagas"></span></p>
+ <br>
+    <button id="modal-participar" class="modal-participar">
+      Participar
+    </button>
 
-<button id="modal-participar">Participar</button>
   </div>
 </div>
+
+
   {% endblock %}

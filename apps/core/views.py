@@ -3,17 +3,19 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, update_session_auth_hash, logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 
 from .models import (
     Utilizador,
     Clube,
     Evento,
     Galeria,
-    Laboratorio,
     SessaoLeitura,
     Cidade,
     SessaoTeatro,
-    Inscricao
+    Inscricao,
+    Livro,
+    Noticia
 )
 
 
@@ -21,51 +23,91 @@ from .models import (
 def home(request):
     clubes = Clube.objects.all()
     eventos = Evento.objects.all()
-    galerias = Galeria.objects.all()
-    laboratorio = Laboratorio.objects.first()
 
     return render(request, 'core/home.html', {
         'clubes': clubes,
         'eventos': eventos,
-        'galerias': galerias,
-        'laboratorio': laboratorio,
     })
 
+@login_required
+@require_POST
+def participar(request, tipo, id):
+
+    modelos = {
+        "evento": Evento,
+        "leitura": SessaoLeitura,
+        "teatro": SessaoTeatro,
+    }
+
+    model = modelos.get(tipo)
+    if not model:
+        return JsonResponse({"error": "Tipo inválido"}, status=400)
+
+    objeto = get_object_or_404(model, pk=id)
+
+    if objeto.lotado:
+        return JsonResponse({"error": "Sem vagas"}, status=400)
+
+    filtros = {"utilizador": request.user}
+
+    if tipo == "evento":
+        filtros["evento"] = objeto
+    elif tipo == "leitura":
+        filtros["sessao_leitura"] = objeto
+    elif tipo == "teatro":
+        filtros["sessao_teatro"] = objeto
+
+    inscricao, created = Inscricao.objects.get_or_create(**filtros)
+
+    if not created:
+        return JsonResponse({
+            "success": False,
+            "already": True,
+            "message": "Já estás inscrito nesta atividade."
+        })
+
+    return JsonResponse({
+        "success": True,
+        "created": True,
+        "vagas_restantes": objeto.vagas_restantes,
+        "inscritos": objeto.inscritos
+    })
 
 def clube_detail(request, slug):
     clube = get_object_or_404(Clube, slug=slug)
 
     if clube.tipo == 'leitura':
-        template = 'core/clubes/clubedeleitura.html'
-        return render(request, template, {
+        livros = Livro.objects.filter(clube_id=1)
+        print("DEBUG LIVROS:", list(livros))
+
+        return render(request, 'core/clubes/clubedeleitura.html', {
             'clube': clube,
-            'livros': clube.livros.all()[:3],
-            'sessoes': SessaoLeitura.objects.filter(livro__clube=clube),
+            'livros': livros,
+            'sessoes': SessaoLeitura.objects.all(),
         })
 
     elif clube.tipo == 'teatro':
-        template = 'core/clubes/clubedeteatro.html'
-        return render(request, template, {
+        noticias = Noticia.objects.filter(clube_id=2)
+
+        return render(request, 'core/clubes/clubedeteatro.html', {
             'clube': clube,
-            'eventos': Evento.objects.all(),
+            'noticias': noticias,
             'sessoes': SessaoTeatro.objects.all(),
-            'noticias': clube.noticias.order_by('-data_publicacao')[:3],
+            'galerias': Galeria.objects.all(),
         })
+
 
     return render(request, 'core/clubes/not-found.html', {
         'clube': clube
     })
 
-
 def calendario_teatro_json(request, slug):
-
     sessoes = SessaoTeatro.objects.all()
     eventos = Evento.objects.all()
 
     data = []
 
     for s in sessoes:
-
         if not s.data_sessao:
             continue
 
@@ -76,15 +118,14 @@ def calendario_teatro_json(request, slug):
             "description": s.descricao or "",
             "local": s.local or "",
             "cidade": s.cidade.nome if s.cidade else "",
-            "vagas": s.vagas,
-            "inscritos": s.inscritos(),
-            "lotado": s.lotado(),
+            "vagas_restantes": s.vagas_restantes,
+            "inscritos": s.inscritos,
+            "lotado": s.lotado,
             "tipo": "teatro",
             "color": "#c62828",
         })
 
     for e in eventos:
-
         if not e.data_evento:
             continue
 
@@ -95,9 +136,9 @@ def calendario_teatro_json(request, slug):
             "description": e.descricao or "",
             "local": e.local or "",
             "cidade": e.cidade.nome if e.cidade else "",
-            "vagas": e.vagas,
-            "inscritos": e.inscritos(),
-            "lotado": e.lotado(),
+            "vagas_restantes": e.vagas_restantes,
+            "inscritos": e.inscritos,
+            "lotado": e.lotado,
             "tipo": "evento",
             "color": "#2e7d32",
         })
@@ -106,14 +147,12 @@ def calendario_teatro_json(request, slug):
 
 
 def calendario_leitura_json(request, slug):
-
     sessoes = SessaoLeitura.objects.all()
     eventos = Evento.objects.all()
 
     data = []
 
     for s in sessoes:
-
         if not s.data_sessao:
             continue
 
@@ -124,15 +163,14 @@ def calendario_leitura_json(request, slug):
             "description": s.livro.descricao if s.livro else "",
             "local": s.local or "",
             "cidade": s.cidade.nome if s.cidade else "",
-            "vagas": s.vagas,
-            "inscritos": s.inscritos(),
-            "lotado": s.lotado(),
+            "vagas_restantes": s.vagas_restantes,
+            "inscritos": s.inscritos,
+            "lotado": s.lotado,
             "tipo": "leitura",
             "color": "#1565c0",
         })
 
     for e in eventos:
-
         if not e.data_evento:
             continue
 
@@ -143,9 +181,9 @@ def calendario_leitura_json(request, slug):
             "description": e.descricao or "",
             "local": e.local or "",
             "cidade": e.cidade.nome if e.cidade else "",
-            "vagas": e.vagas,
-            "inscritos": e.inscritos(),
-            "lotado": e.lotado(),
+            "vagas_restantes": e.vagas_restantes,
+            "inscritos": e.inscritos,
+            "lotado": e.lotado,
             "tipo": "evento",
             "color": "#2e7d32",
         })
@@ -155,12 +193,14 @@ def calendario_leitura_json(request, slug):
 # ---------------- AUTH ----------------
 def login_view(request):
     error = None
-    next_url = request.GET.get("next")
+    next_url = request.GET.get("next") or request.POST.get("next")
+
+    if next_url in [None, "", "None", "null"]:
+        next_url = None
 
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
-        next_url = request.POST.get("next")
 
         user = authenticate(request, username=email, password=password)
 
@@ -180,14 +220,10 @@ def login_view(request):
         else:
             error = "Credenciais inválidas"
 
-    return render(
-        request,
-        "registration/login.html",
-        {
-            "error": error,
-            "next": next_url
-        }
-    )
+    return render(request, "registration/login.html", {
+        "error": error,
+        "next": next_url or ""
+    })
 
 
 def register_view(request):
@@ -267,27 +303,66 @@ def logout_view(request):
     logout(request)
     return redirect("/")
 
-# ---------------- PROGRAMAÇÃO CULTURAL ----------------
 def programacaocultural(request):
     eventos = Evento.objects.all()
     sessoes = SessaoLeitura.objects.all()
+    sessoes_teatro = SessaoTeatro.objects.all()
 
     cidade = request.GET.get("cidade")
-    tipo = request.GET.get("tipo_evento")
-    data = request.GET.get("data_evento")
+    tipo = request.GET.get("tipo_atividade")
+    date_range = request.GET.get("date_range")
 
-    if data:
-        eventos = eventos.filter(data_evento=data)
-        sessoes = sessoes.filter(data_sessao=data)
+    dates = None
 
-    if tipo:
-        eventos = eventos.filter(tipo_evento=tipo)
+    date_range = request.GET.get("date_range")
 
+    dates = None
+
+    if date_range:
+        if " até " in date_range:
+            dates = date_range.split(" até ")
+        elif " to " in date_range:
+            dates = date_range.split(" to ")
+        else:
+            dates = [date_range]
+
+    if dates and len(dates) == 2:
+        data_inicio, data_fim = dates
+
+        eventos = eventos.filter(data_evento__range=[data_inicio, data_fim])
+        sessoes = sessoes.filter(data_sessao__range=[data_inicio, data_fim])
+        sessoes_teatro = sessoes_teatro.filter(data_sessao__range=[data_inicio, data_fim])
+
+    elif dates and len(dates) == 1:
+        data_unica = dates[0]
+
+        eventos = eventos.filter(data_evento=data_unica)
+        sessoes = sessoes.filter(data_sessao=data_unica)
+        sessoes_teatro = sessoes_teatro.filter(data_sessao=data_unica)
+
+    # ---------------- FILTRO CIDADE ----------------
     if cidade:
         eventos = eventos.filter(cidade_id=cidade)
+        sessoes = sessoes.filter(cidade_id=cidade)
+        sessoes_teatro = sessoes_teatro.filter(cidade_id=cidade)
 
+    # ---------------- FILTRO TIPO ----------------
+    if tipo == "evento":
+        sessoes = SessaoLeitura.objects.none()
+        sessoes_teatro = SessaoTeatro.objects.none()
+
+    elif tipo == "leitura":
+        eventos = Evento.objects.none()
+        sessoes_teatro = SessaoTeatro.objects.none()
+
+    elif tipo == "teatro":
+        eventos = Evento.objects.none()
+        sessoes = SessaoLeitura.objects.none()
+
+    # ---------------- BUILD PROGRAMACAO ----------------
     programacao = []
 
+    # EVENTOS
     for e in eventos:
         ja_inscrito = False
 
@@ -311,42 +386,78 @@ def programacaocultural(request):
             "type_label": "Evento",
         })
 
+    # LEITURA
     for s in sessoes:
-        if s.livro:
-            ja_inscrito = False
+        if not s.livro:
+            continue
 
-            if request.user.is_authenticated:
-                ja_inscrito = Inscricao.objects.filter(
-                    utilizador=request.user,
-                    sessao_leitura=s
-                ).exists()
+        ja_inscrito = False
 
-            programacao.append({
-                "titulo": s.livro.titulo,
-                "descricao": s.livro.descricao,
-                "data": s.data_sessao.strftime("%d/%m/%Y") if s.data_sessao else "",
-                "local": s.local,
-                "imagem": s.livro.capa.url if s.livro.capa else "",
-                "vagas": s.vagas,
-                "inscritos": s.inscritos,
-                "ja_inscrito": ja_inscrito,
-                "type": "sessao_leitura",
-                "type_label": "Sessão de Leitura",
-            })
+        if request.user.is_authenticated:
+            ja_inscrito = Inscricao.objects.filter(
+                utilizador=request.user,
+                sessao_leitura=s
+            ).exists()
 
-    programacao = sorted(programacao, key=lambda x: x["data"] or "")
+        programacao.append({
+            "id": s.id,
+            "titulo": s.livro.titulo,
+            "descricao": s.livro.descricao,
+            "data": s.data_sessao.strftime("%d/%m/%Y") if s.data_sessao else "",
+            "local": s.local,
+            "imagem": s.livro.capa.url if s.livro.capa else "",
+            "vagas": s.vagas,
+            "inscritos": s.inscritos,
+            "ja_inscrito": ja_inscrito,
+            "type": "sessao_leitura",
+            "type_label": "Sessão de Leitura",
+        })
 
+    # TEATRO (CORRIGIDO)
+    for t in sessoes_teatro:
+        if not t.data_sessao:
+            continue
+
+        ja_inscrito = False
+
+        if request.user.is_authenticated:
+            ja_inscrito = Inscricao.objects.filter(
+                utilizador=request.user,
+                sessao_teatro=t
+            ).exists()
+
+        programacao.append({
+            "id": t.id,
+            "titulo": t.titulo,
+            "descricao": t.descricao,
+            "data": t.data_sessao.strftime("%d/%m/%Y"),
+            "local": t.local,
+            "imagem": t.imagem.url if t.imagem else "",
+            "vagas": t.vagas,
+            "inscritos": t.inscritos,
+            "ja_inscrito": ja_inscrito,
+            "type": "sessao_teatro",
+            "type_label": "Sessão de Teatro",
+        })
+
+    # ---------------- ORDENAR DATA ----------------
+    from datetime import datetime
+
+    programacao = sorted(
+        programacao,
+        key=lambda x: datetime.strptime(x["data"], "%d/%m/%Y") if x["data"] else datetime.min
+    )
+
+    # ---------------- INSCRIÇÕES MODAL ----------------
     inscricoes_modal = []
 
     if request.user.is_authenticated:
-        inscricoes = (
-            Inscricao.objects
-            .filter(utilizador=request.user)
-            .select_related(
-                "evento",
-                "sessao_leitura",
-                "sessao_teatro"
-            )
+        inscricoes = Inscricao.objects.filter(
+            utilizador=request.user
+        ).select_related(
+            "evento",
+            "sessao_leitura",
+            "sessao_teatro"
         )
 
         for i in inscricoes:
@@ -360,23 +471,20 @@ def programacaocultural(request):
                     None
                 ) or (
                     atividade.livro.titulo
-                    if hasattr(atividade, "livro")
-                    and atividade.livro
+                    if hasattr(atividade, "livro") and atividade.livro
                     else "Sem título"
                 ),
                 "local": atividade.local,
                 "tipo": atividade.__class__.__name__,
             })
 
-    return render(request, "core/programacaocultural.html", {
+    return render(request,  "core/programacaocultural.html", {
         "programacao": programacao,
         "inscricoes": inscricoes_modal,
         "cidades": Cidade.objects.all(),
-        "tipos": Evento.objects.values_list("tipo_evento", flat=True).distinct(),
-        "datas": Evento.objects.exclude(
-            data_evento__isnull=True
-        ).values_list("data_evento", flat=True).distinct().order_by("data_evento"),
     })
+
+
 
 @login_required
 def inscrever(request):
@@ -427,6 +535,18 @@ def inscrever(request):
     return JsonResponse({
         "success": True,
         "created": created
+    })
+
+def evento_detail(request, id):
+    from django.http import JsonResponse
+    from .models import Evento
+
+    evento = Evento.objects.get(id=id)
+
+    return JsonResponse({
+        "id": evento.id,
+        "vagas_restantes": evento.vagas_restantes,
+        "inscritos": evento.inscritos,
     })
 
 

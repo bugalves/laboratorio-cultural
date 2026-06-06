@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
 import os
 from dotenv import load_dotenv
 from pathlib import Path
@@ -51,6 +50,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -67,7 +67,7 @@ AUTHENTICATION_BACKENDS = [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'template'],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -116,7 +116,12 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-pt'
+
+LANGUAGES = [
+    ('pt', 'Português'),
+    ('en', 'English'),
+]
 
 TIME_ZONE = 'UTC'
 
@@ -134,3 +139,62 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
+
+JAZZMIN_SETTINGS = {
+    "custom_css": "/css/admin.css",
+    "site_title": "ISPGAYA - Gestão Cultural",
+    "site_header": "ISPGAYA",
+
+    "welcome_sign": "Sistema de Gestão ISPGAYA",
+        "hide_apps": [
+        "auth"
+    ],
+
+"related_modal_active": True,
+
+ "menu": [
+    {
+        "name": "Laboratório Cultural",
+        "icon": "fas fa-flask",
+        "models": [
+            {"model": "core.clube"},
+            {"model": "core.evento"},
+            {"model": "core.galeria"},
+        ],
+    },
+    {
+        "name": "Clube de Leitura",
+        "icon": "fas fa-book",
+        "models": [
+            {"model": "core.livro"},
+            {"model": "core.sessaoleitura"},
+        ],
+    },
+    {
+        "name": "Clube de Teatro",
+        "icon": "fas fa-theater-masks",
+        "models": [
+            {"model": "core.noticia"},
+            {"model": "core.sessaoteatro"},
+            {"model": "core.galeria"},
+        ],
+    },
+    {
+        "name": "Geral",
+        "icon": "fas fa-cogs",
+        "models": [
+            {"model": "core.cidade"},
+            {"model": "core.utilizador"},
+        ],
+    },
+]
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "navbar": "navbar-dark",
+    "sidebar": "sidebar-dark-primary",
+    "accent": "accent-warning",
+    "theme": "flatly",
+}

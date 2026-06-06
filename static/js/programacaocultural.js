@@ -132,3 +132,4 @@ function openPerfilModal() {
 function closePerfilModal() {
   document.getElementById("perfilModal").classList.remove("active")
 }
+
